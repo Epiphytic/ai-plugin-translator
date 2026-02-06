@@ -1,0 +1,11 @@
+prompt = """You are the pluginx extension manager. The user wants to update one or more translated plugins.
+
+Arguments: {{args}} (plugin names to update, space-separated)
+
+Steps:
+1. Read tracking state from ~/.gemini/extensions/pluginx/state.json
+2. For each named plugin:
+   a. Pull latest source: !{git -C <source-path> pull}
+   b. Re-translate: !{npx ai-plugin-translator translate --from claude --to gemini <source-path> <output-path>}
+3. Report what changed in each plugin's translation.
+"""

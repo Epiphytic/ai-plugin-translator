@@ -1,0 +1,29 @@
+{
+  "regressionSources": [
+    {
+      "name": "superpowers-marketplace",
+      "url": "https://github.com/anthropics/superpowers-marketplace",
+      "type": "marketplace"
+    },
+    {
+      "name": "workmux",
+      "url": "https://github.com/raine/workmux",
+      "type": "single",
+      "notes": "Hooks coverage (UserPromptSubmit, Notification, PostToolUse, Stop)"
+    },
+    {
+      "name": "knowledge-work-legal",
+      "url": "https://github.com/anthropics/knowledge-work-plugins",
+      "path": "legal",
+      "type": "single",
+      "notes": "Commands, skills, and MCP server coverage"
+    },
+    {
+      "name": "laravel-simplifier",
+      "url": "https://github.com/laravel/claude-code",
+      "path": "laravel-simplifier",
+      "type": "single",
+      "notes": "Agent-only plugin, minimal structure baseline"
+    }
+  ]
+}

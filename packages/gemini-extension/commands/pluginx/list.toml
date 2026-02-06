@@ -1,0 +1,11 @@
+prompt = """You are the pluginx extension manager. The user wants to see all tracked translated plugins.
+
+Steps:
+1. Read tracking state from ~/.gemini/extensions/pluginx/state.json
+2. Display a formatted list showing:
+   - Plugin name
+   - Source URL
+   - Type (single or marketplace)
+   - Source ecosystem
+   If no plugins are tracked, tell the user to use /pluginx add or /pluginx add-marketplace to get started.
+"""

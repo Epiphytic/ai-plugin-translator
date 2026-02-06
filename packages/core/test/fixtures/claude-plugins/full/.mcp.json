@@ -1,0 +1,16 @@
+{
+  "my-mcp": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "@example/mcp-server"
+    ]
+  },
+  "http-server": {
+    "type": "http",
+    "url": "https://api.example.com/mcp",
+    "headers": {
+      "Authorization": "Bearer ${MY_API_KEY}"
+    }
+  }
+}

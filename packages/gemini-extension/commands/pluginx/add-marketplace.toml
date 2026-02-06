@@ -1,0 +1,19 @@
+prompt = """You are the pluginx extension manager. The user wants to add all plugins from a Claude Code plugin marketplace.
+
+Arguments: {{args}} (a GitHub URL or local path to a marketplace repository)
+
+Steps:
+1. Clone the marketplace repository if a URL is provided:
+   !{git clone {{args}} /tmp/pluginx-marketplace-$(date +%s)}
+
+2. Translate all plugins in the marketplace:
+   !{npx ai-plugin-translator translate-marketplace --from claude --to gemini /tmp/pluginx-marketplace-* ~/.gemini/extensions/pluginx-translations}
+
+3. Link each translated extension:
+   For each subdirectory in the output, run:
+   !{gemini extensions link ~/.gemini/extensions/pluginx-translations/<plugin-name>}
+
+4. Update tracking state in ~/.gemini/extensions/pluginx/state.json with type "marketplace"
+
+5. Report the translation results for all plugins, including any skipped components or warnings.
+"""

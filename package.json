@@ -1,0 +1,11 @@
+{
+  "name": "ai-plugin-translator-root",
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "test:unit": "pnpm -r --filter ai-plugin-translator test",
+    "test:int": "pnpm -r --filter ai-plugin-translator test -- --reporter=verbose",
+    "lint": "pnpm -r lint"
+  }
+}

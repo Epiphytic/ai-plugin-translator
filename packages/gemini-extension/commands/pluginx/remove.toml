@@ -1,0 +1,12 @@
+prompt = """You are the pluginx extension manager. The user wants to remove a translated plugin from tracking.
+
+Arguments: {{args}} (name of the plugin to remove)
+
+Steps:
+1. Read tracking state from ~/.gemini/extensions/pluginx/state.json
+2. Remove the named plugin entry from state
+3. Write updated state back to state.json
+4. Advise the user to manually run: gemini extensions uninstall <plugin-name>
+   (We don't auto-uninstall to prevent accidental data loss)
+5. Confirm removal from tracking.
+"""

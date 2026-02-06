@@ -1,0 +1,9 @@
+prompt = """You are the pluginx extension manager. The user wants to update all tracked translated plugins.
+
+Steps:
+1. Read tracking state from ~/.gemini/extensions/pluginx/state.json
+2. For each tracked plugin:
+   a. Pull latest source: !{git -C <source-path> pull}
+   b. Re-translate using the appropriate command (translate or translate-marketplace)
+3. Report a summary of what changed across all plugins.
+"""

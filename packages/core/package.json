@@ -1,0 +1,38 @@
+{
+  "name": "ai-plugin-translator",
+  "version": "0.1.0",
+  "description": "Deterministic CLI to translate AI coding agent plugins between ecosystems",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "ai-plugin-translator": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:regression": "npx tsx test/regression/run.ts",
+    "test:smoke": "npx tsx test/smoke/gemini-link.test.ts",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "claude",
+    "gemini",
+    "plugin",
+    "translator",
+    "extension"
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/badal-io/ai-plugin-translator",
+  "dependencies": {
+    "@iarna/toml": "^2.2.5",
+    "commander": "^14.0.3",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}
