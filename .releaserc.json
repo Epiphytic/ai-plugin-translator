@@ -8,7 +8,8 @@
     [
       "@semantic-release/npm",
       {
-        "pkgRoot": "packages/core"
+        "pkgRoot": "packages/core",
+        "provenance": true
       }
     ],
     [
