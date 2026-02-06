@@ -13,7 +13,7 @@
       "@semantic-release/exec",
       {
         "prepareCmd": "npm version ${nextRelease.version} --no-git-tag-version --prefix packages/core",
-        "publishCmd": "npm publish --provenance --access public packages/core"
+        "publishCmd": "cd packages/core && npm publish --provenance --access public"
       }
     ],
     [
