@@ -1,0 +1,65 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "product-management",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "product-management"
+    },
+    {
+      "type": "command",
+      "name": "competitive-brief"
+    },
+    {
+      "type": "command",
+      "name": "metrics-review"
+    },
+    {
+      "type": "command",
+      "name": "roadmap-update"
+    },
+    {
+      "type": "command",
+      "name": "stakeholder-update"
+    },
+    {
+      "type": "command",
+      "name": "synthesize-research"
+    },
+    {
+      "type": "command",
+      "name": "write-spec"
+    },
+    {
+      "type": "skill",
+      "name": "competitive-analysis"
+    },
+    {
+      "type": "skill",
+      "name": "feature-spec"
+    },
+    {
+      "type": "skill",
+      "name": "metrics-tracking"
+    },
+    {
+      "type": "skill",
+      "name": "roadmap-management"
+    },
+    {
+      "type": "skill",
+      "name": "stakeholder-comms"
+    },
+    {
+      "type": "skill",
+      "name": "user-research-synthesis"
+    },
+    {
+      "type": "mcp-server",
+      "name": "mcpServers"
+    }
+  ],
+  "skipped": [],
+  "warnings": []
+}

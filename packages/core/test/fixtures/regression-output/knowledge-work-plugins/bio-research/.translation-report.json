@@ -1,0 +1,41 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "bio-research",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "bio-research"
+    },
+    {
+      "type": "command",
+      "name": "start"
+    },
+    {
+      "type": "skill",
+      "name": "instrument-data-to-allotrope"
+    },
+    {
+      "type": "skill",
+      "name": "nextflow-development"
+    },
+    {
+      "type": "skill",
+      "name": "scientific-problem-selection"
+    },
+    {
+      "type": "skill",
+      "name": "scvi-tools"
+    },
+    {
+      "type": "skill",
+      "name": "single-cell-rna-qc"
+    },
+    {
+      "type": "mcp-server",
+      "name": "mcpServers"
+    }
+  ],
+  "skipped": [],
+  "warnings": []
+}

@@ -1,0 +1,17 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "cowork-plugin-management",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "cowork-plugin-management"
+    },
+    {
+      "type": "skill",
+      "name": "cowork-plugin-customizer"
+    }
+  ],
+  "skipped": [],
+  "warnings": []
+}

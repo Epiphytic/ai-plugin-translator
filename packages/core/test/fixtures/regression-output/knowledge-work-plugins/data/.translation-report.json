@@ -1,0 +1,69 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "data",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "data"
+    },
+    {
+      "type": "command",
+      "name": "analyze"
+    },
+    {
+      "type": "command",
+      "name": "build-dashboard"
+    },
+    {
+      "type": "command",
+      "name": "create-viz"
+    },
+    {
+      "type": "command",
+      "name": "explore-data"
+    },
+    {
+      "type": "command",
+      "name": "validate"
+    },
+    {
+      "type": "command",
+      "name": "write-query"
+    },
+    {
+      "type": "skill",
+      "name": "data-context-extractor"
+    },
+    {
+      "type": "skill",
+      "name": "data-exploration"
+    },
+    {
+      "type": "skill",
+      "name": "data-validation"
+    },
+    {
+      "type": "skill",
+      "name": "data-visualization"
+    },
+    {
+      "type": "skill",
+      "name": "interactive-dashboard-builder"
+    },
+    {
+      "type": "skill",
+      "name": "sql-queries"
+    },
+    {
+      "type": "skill",
+      "name": "statistical-analysis"
+    },
+    {
+      "type": "mcp-server",
+      "name": "mcpServers"
+    }
+  ],
+  "skipped": [],
+  "warnings": []
+}

@@ -1,0 +1,57 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "customer-support",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "customer-support"
+    },
+    {
+      "type": "command",
+      "name": "draft-response"
+    },
+    {
+      "type": "command",
+      "name": "escalate"
+    },
+    {
+      "type": "command",
+      "name": "kb-article"
+    },
+    {
+      "type": "command",
+      "name": "research"
+    },
+    {
+      "type": "command",
+      "name": "triage"
+    },
+    {
+      "type": "skill",
+      "name": "customer-research"
+    },
+    {
+      "type": "skill",
+      "name": "escalation"
+    },
+    {
+      "type": "skill",
+      "name": "knowledge-management"
+    },
+    {
+      "type": "skill",
+      "name": "response-drafting"
+    },
+    {
+      "type": "skill",
+      "name": "ticket-triage"
+    },
+    {
+      "type": "mcp-server",
+      "name": "mcpServers"
+    }
+  ],
+  "skipped": [],
+  "warnings": []
+}

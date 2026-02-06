@@ -1,0 +1,53 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "sales",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "sales"
+    },
+    {
+      "type": "command",
+      "name": "call-summary"
+    },
+    {
+      "type": "command",
+      "name": "forecast"
+    },
+    {
+      "type": "command",
+      "name": "pipeline-review"
+    },
+    {
+      "type": "skill",
+      "name": "account-research"
+    },
+    {
+      "type": "skill",
+      "name": "call-prep"
+    },
+    {
+      "type": "skill",
+      "name": "competitive-intelligence"
+    },
+    {
+      "type": "skill",
+      "name": "create-an-asset"
+    },
+    {
+      "type": "skill",
+      "name": "daily-briefing"
+    },
+    {
+      "type": "skill",
+      "name": "draft-outreach"
+    },
+    {
+      "type": "mcp-server",
+      "name": "mcpServers"
+    }
+  ],
+  "skipped": [],
+  "warnings": []
+}

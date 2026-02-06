@@ -1,0 +1,65 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "marketing",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "marketing"
+    },
+    {
+      "type": "command",
+      "name": "brand-review"
+    },
+    {
+      "type": "command",
+      "name": "campaign-plan"
+    },
+    {
+      "type": "command",
+      "name": "competitive-brief"
+    },
+    {
+      "type": "command",
+      "name": "draft-content"
+    },
+    {
+      "type": "command",
+      "name": "email-sequence"
+    },
+    {
+      "type": "command",
+      "name": "performance-report"
+    },
+    {
+      "type": "command",
+      "name": "seo-audit"
+    },
+    {
+      "type": "skill",
+      "name": "brand-voice"
+    },
+    {
+      "type": "skill",
+      "name": "campaign-planning"
+    },
+    {
+      "type": "skill",
+      "name": "competitive-analysis"
+    },
+    {
+      "type": "skill",
+      "name": "content-creation"
+    },
+    {
+      "type": "skill",
+      "name": "performance-analytics"
+    },
+    {
+      "type": "mcp-server",
+      "name": "mcpServers"
+    }
+  ],
+  "skipped": [],
+  "warnings": []
+}

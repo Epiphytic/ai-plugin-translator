@@ -10,12 +10,34 @@
  * Requires git on PATH. Clones into test/fixtures/cloned-sources/ (gitignored).
  */
 
-import { execFileSync } from "child_process";
+import { execFileSync, execFile } from "child_process";
 import { existsSync, readFileSync, mkdirSync, rmSync, readdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import matter from "gray-matter";
 import { translate, translateMarketplace } from "../../src/translate.js";
+
+function isGeminiAvailable(): boolean {
+  try {
+    execFileSync("gemini", ["--version"], { stdio: "pipe" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function geminiValidate(extensionDir: string): string | null {
+  try {
+    execFileSync("gemini", ["extensions", "validate", extensionDir], {
+      stdio: "pipe",
+    });
+    return null;
+  } catch (err) {
+    const stderr = (err as { stderr?: Buffer }).stderr?.toString() ?? "";
+    const stdout = (err as { stdout?: Buffer }).stdout?.toString() ?? "";
+    return stderr || stdout || (err as Error).message;
+  }
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const sourcesPath = join(__dirname, "sources.json");
@@ -58,6 +80,26 @@ function validateAgents(pluginOutputDir: string): string[] {
   return errors;
 }
 
+function validateManifest(pluginOutputDir: string): string[] {
+  const errors: string[] = [];
+  const manifestPath = join(pluginOutputDir, "gemini-extension.json");
+  if (!existsSync(manifestPath)) return errors;
+
+  const manifest = JSON.parse(readFileSync(manifestPath, "utf-8"));
+  if (
+    manifest.contextFileName &&
+    typeof manifest.contextFileName === "string"
+  ) {
+    const contextPath = join(pluginOutputDir, manifest.contextFileName);
+    if (!existsSync(contextPath)) {
+      errors.push(
+        `gemini-extension.json references missing context file: ${manifest.contextFileName}`
+      );
+    }
+  }
+  return errors;
+}
+
 function cloneOrPull(url: string, targetDir: string): void {
   if (existsSync(targetDir)) {
     console.log(`  Pulling latest for ${targetDir}`);
@@ -76,6 +118,13 @@ async function runRegression(): Promise<void> {
   const config: SourcesConfig = JSON.parse(
     readFileSync(sourcesPath, "utf-8")
   );
+
+  const geminiAvailable = isGeminiAvailable();
+  if (geminiAvailable) {
+    console.log("Gemini CLI detected — will run `gemini extensions validate`");
+  } else {
+    console.log("Gemini CLI not found — skipping `gemini extensions validate`");
+  }
 
   mkdirSync(cloneDir, { recursive: true });
 
@@ -132,12 +181,25 @@ async function runRegression(): Promise<void> {
             );
             failed++;
           } else {
-            const agentErrors = validateAgents(pluginDir);
-            if (agentErrors.length > 0) {
-              for (const ae of agentErrors) {
+            const allErrors = [
+              ...validateAgents(pluginDir),
+              ...validateManifest(pluginDir),
+            ];
+            if (allErrors.length > 0) {
+              for (const ae of allErrors) {
                 errors.push(`${source.name}/${report.pluginName}: ${ae}`);
               }
               failed++;
+            } else if (geminiAvailable) {
+              const validateErr = geminiValidate(pluginDir);
+              if (validateErr) {
+                errors.push(
+                  `${source.name}/${report.pluginName}: gemini validate failed: ${validateErr}`
+                );
+                failed++;
+              } else {
+                passed++;
+              }
             } else {
               passed++;
             }
@@ -165,13 +227,26 @@ async function runRegression(): Promise<void> {
           // Validate manifest is parseable JSON
           JSON.parse(readFileSync(manifestPath, "utf-8"));
 
-          // Validate agents
-          const agentErrors = validateAgents(pluginOutputDir);
-          if (agentErrors.length > 0) {
-            for (const ae of agentErrors) {
+          // Validate agents and manifest references
+          const allErrors = [
+            ...validateAgents(pluginOutputDir),
+            ...validateManifest(pluginOutputDir),
+          ];
+          if (allErrors.length > 0) {
+            for (const ae of allErrors) {
               errors.push(`${source.name}: ${ae}`);
             }
             failed++;
+          } else if (geminiAvailable) {
+            const validateErr = geminiValidate(pluginOutputDir);
+            if (validateErr) {
+              errors.push(
+                `${source.name}: gemini validate failed: ${validateErr}`
+              );
+              failed++;
+            } else {
+              passed++;
+            }
           } else {
             passed++;
           }

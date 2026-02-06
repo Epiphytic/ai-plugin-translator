@@ -1,0 +1,61 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "finance",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "finance"
+    },
+    {
+      "type": "command",
+      "name": "income-statement"
+    },
+    {
+      "type": "command",
+      "name": "journal-entry"
+    },
+    {
+      "type": "command",
+      "name": "reconciliation"
+    },
+    {
+      "type": "command",
+      "name": "sox-testing"
+    },
+    {
+      "type": "command",
+      "name": "variance-analysis"
+    },
+    {
+      "type": "skill",
+      "name": "audit-support"
+    },
+    {
+      "type": "skill",
+      "name": "close-management"
+    },
+    {
+      "type": "skill",
+      "name": "financial-statements"
+    },
+    {
+      "type": "skill",
+      "name": "journal-entry-prep"
+    },
+    {
+      "type": "skill",
+      "name": "reconciliation"
+    },
+    {
+      "type": "skill",
+      "name": "variance-analysis"
+    },
+    {
+      "type": "mcp-server",
+      "name": "mcpServers"
+    }
+  ],
+  "skipped": [],
+  "warnings": []
+}

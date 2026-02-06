@@ -10,6 +10,7 @@
  * Requires git on PATH and network access.
  */
 
+import { execFileSync } from "child_process";
 import { existsSync, readFileSync, readdirSync, rmSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -17,6 +18,28 @@ import matter from "gray-matter";
 import { translateMarketplace } from "../../src/translate.js";
 import { cloneToTemp, resolveGitUrl } from "../../src/utils/git.js";
 import type { TranslationReport } from "../../src/adapters/types.js";
+
+function isGeminiAvailable(): boolean {
+  try {
+    execFileSync("gemini", ["--version"], { stdio: "pipe" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function geminiValidate(extensionDir: string): string | null {
+  try {
+    execFileSync("gemini", ["extensions", "validate", extensionDir], {
+      stdio: "pipe",
+    });
+    return null;
+  } catch (err) {
+    const stderr = (err as { stderr?: Buffer }).stderr?.toString() ?? "";
+    const stdout = (err as { stdout?: Buffer }).stdout?.toString() ?? "";
+    return stderr || stdout || (err as Error).message;
+  }
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const outputDir = join(__dirname, "../fixtures/regression-output/superpowers-marketplace-test");
@@ -98,6 +121,16 @@ function validateGeminiExtension(pluginDir: string, pluginName: string): Validat
     }
   }
 
+  // 5. Context files referenced in manifest must exist
+  if (manifest.contextFileName && typeof manifest.contextFileName === "string") {
+    const contextPath = join(pluginDir, manifest.contextFileName);
+    if (!existsSync(contextPath)) {
+      errors.push(
+        `gemini-extension.json references missing context file: ${manifest.contextFileName}`
+      );
+    }
+  }
+
   return {
     pluginName,
     valid: errors.length === 0,
@@ -108,8 +141,15 @@ function validateGeminiExtension(pluginDir: string, pluginName: string): Validat
 }
 
 async function run(): Promise<void> {
+  const geminiAvailable = isGeminiAvailable();
+
   console.log(`\nSuperpowers Marketplace Regression Test`);
   console.log(`${"=".repeat(50)}`);
+  if (geminiAvailable) {
+    console.log("Gemini CLI detected — will run `gemini extensions validate`");
+  } else {
+    console.log("Gemini CLI not found — skipping `gemini extensions validate`");
+  }
 
   // Step 1: Resolve shorthand and clone
   const gitUrl = resolveGitUrl(MARKETPLACE_SHORTHAND);
@@ -153,6 +193,16 @@ async function run(): Promise<void> {
     for (const report of reports) {
       const pluginDir = join(outputDir, report.pluginName);
       const result = validateGeminiExtension(pluginDir, report.pluginName);
+
+      // Run gemini extensions validate if structural checks passed
+      if (result.valid && geminiAvailable) {
+        const validateErr = geminiValidate(pluginDir);
+        if (validateErr) {
+          result.valid = false;
+          result.errors.push(`gemini extensions validate failed: ${validateErr}`);
+        }
+      }
+
       results.push(result);
 
       const status = result.valid ? "PASS" : "FAIL";

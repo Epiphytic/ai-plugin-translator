@@ -1,0 +1,37 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "enterprise-search",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "enterprise-search"
+    },
+    {
+      "type": "command",
+      "name": "digest"
+    },
+    {
+      "type": "command",
+      "name": "search"
+    },
+    {
+      "type": "skill",
+      "name": "knowledge-synthesis"
+    },
+    {
+      "type": "skill",
+      "name": "search-strategy"
+    },
+    {
+      "type": "skill",
+      "name": "source-management"
+    },
+    {
+      "type": "mcp-server",
+      "name": "mcpServers"
+    }
+  ],
+  "skipped": [],
+  "warnings": []
+}

@@ -1,0 +1,33 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "productivity",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "productivity"
+    },
+    {
+      "type": "command",
+      "name": "start"
+    },
+    {
+      "type": "command",
+      "name": "update"
+    },
+    {
+      "type": "skill",
+      "name": "memory-management"
+    },
+    {
+      "type": "skill",
+      "name": "task-management"
+    },
+    {
+      "type": "mcp-server",
+      "name": "mcpServers"
+    }
+  ],
+  "skipped": [],
+  "warnings": []
+}
