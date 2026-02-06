@@ -1,6 +1,5 @@
 {
   "name": "pluginx",
   "version": "0.1.0",
-  "description": "Translate and manage Claude Code plugins as Gemini CLI extensions",
-  "contextFileName": "GEMINI.md"
+  "description": "Translate and manage Claude Code plugins as Gemini CLI extensions"
 }
