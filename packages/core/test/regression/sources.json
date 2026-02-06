@@ -1,9 +1,16 @@
 {
   "regressionSources": [
     {
-      "name": "superpowers-marketplace",
-      "url": "https://github.com/anthropics/superpowers-marketplace",
-      "type": "marketplace"
+      "name": "superpowers",
+      "url": "https://github.com/obra/superpowers",
+      "type": "single",
+      "notes": "Skills, hooks, commands, agents, MCP servers - most comprehensive real plugin"
+    },
+    {
+      "name": "double-shot-latte",
+      "url": "https://github.com/obra/double-shot-latte",
+      "type": "single",
+      "notes": "Hook-heavy plugin with PreToolUse/PostToolUse hooks"
     },
     {
       "name": "workmux",
