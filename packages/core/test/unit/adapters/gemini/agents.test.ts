@@ -117,4 +117,16 @@ describe("generateGeminiAgent", () => {
     );
     expect(result.content).toContain("You are a specialized agent.");
   });
+
+  it("quotes descriptions containing YAML-special characters", () => {
+    const desc = 'Use when user: "does something" and assistant: "responds"';
+    const result = generateGeminiAgent(
+      makeAgent({
+        frontmatter: { name: "test-agent", description: desc },
+      })
+    );
+    // Should be quoted so gray-matter can parse it back
+    expect(result.content).toContain("description:");
+    expect(result.content).not.toContain("description: Use when user:");
+  });
 });

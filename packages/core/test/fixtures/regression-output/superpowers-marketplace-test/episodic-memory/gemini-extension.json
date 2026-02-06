@@ -1,0 +1,14 @@
+{
+  "name": "episodic-memory",
+  "version": "1.0.15",
+  "description": "Semantic search for Claude Code conversations. Remember past discussions, decisions, and patterns.",
+  "mcpServers": {
+    "episodic-memory": {
+      "command": "node",
+      "args": [
+        "${extensionPath}/cli/mcp-server-wrapper.js"
+      ],
+      "env": {}
+    }
+  }
+}

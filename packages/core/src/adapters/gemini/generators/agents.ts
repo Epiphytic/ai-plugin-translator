@@ -2,6 +2,15 @@ import type { AgentIR } from "../../../ir/types.js";
 
 const GEMINI_AGENT_KEYS = new Set(["name", "description"]);
 
+/** Quote a YAML string value if it contains characters that would break parsing. */
+function yamlQuote(value: string): string {
+  if (/[:{}\[\],&*?|>!%@`#'"]/.test(value) || value.includes("\n")) {
+    // Use double-quoted YAML string, escaping internal quotes and backslashes
+    return '"' + value.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
+  }
+  return value;
+}
+
 export function generateGeminiAgent(agent: AgentIR): {
   content: string;
   warnings: string[];
@@ -27,7 +36,7 @@ export function generateGeminiAgent(agent: AgentIR): {
   }
 
   const yamlLines = Object.entries(frontmatter).map(
-    ([k, v]) => `${k}: ${typeof v === "string" ? v : JSON.stringify(v)}`
+    ([k, v]) => `${k}: ${typeof v === "string" ? yamlQuote(v) : JSON.stringify(v)}`
   );
 
   return {

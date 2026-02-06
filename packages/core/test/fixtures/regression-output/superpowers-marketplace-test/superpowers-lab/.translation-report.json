@@ -1,0 +1,29 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "superpowers-lab",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "superpowers-lab"
+    },
+    {
+      "type": "skill",
+      "name": "finding-duplicate-functions"
+    },
+    {
+      "type": "skill",
+      "name": "mcp-cli"
+    },
+    {
+      "type": "skill",
+      "name": "slack-messaging"
+    },
+    {
+      "type": "skill",
+      "name": "using-tmux-for-interactive-commands"
+    }
+  ],
+  "skipped": [],
+  "warnings": []
+}

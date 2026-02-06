@@ -1,0 +1,17 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "elements-of-style",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "elements-of-style"
+    },
+    {
+      "type": "skill",
+      "name": "writing-clearly-and-concisely"
+    }
+  ],
+  "skipped": [],
+  "warnings": []
+}

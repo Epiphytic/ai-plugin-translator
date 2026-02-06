@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { cloneToTemp } from "../../../src/utils/git.js";
+import { cloneToTemp, resolveGitUrl } from "../../../src/utils/git.js";
 import { existsSync } from "fs";
 
 describe("cloneToTemp", () => {
@@ -61,5 +61,31 @@ describe("cloneToTemp", () => {
     // The temp dir should have been cleaned up
     // (We can't easily check the exact path since it was cleaned up,
     // but the function should not leak temp dirs)
+  });
+});
+
+describe("resolveGitUrl", () => {
+  it("resolves owner/repo shorthand to GitHub URL", () => {
+    expect(resolveGitUrl("obra/superpowers-marketplace")).toBe(
+      "https://github.com/obra/superpowers-marketplace.git"
+    );
+  });
+
+  it("passes through full HTTPS URLs unchanged", () => {
+    expect(resolveGitUrl("https://github.com/obra/superpowers.git")).toBe(
+      "https://github.com/obra/superpowers.git"
+    );
+  });
+
+  it("passes through git@ SSH URLs unchanged", () => {
+    expect(resolveGitUrl("git@github.com:obra/superpowers.git")).toBe(
+      "git@github.com:obra/superpowers.git"
+    );
+  });
+
+  it("passes through HTTP URLs unchanged", () => {
+    expect(resolveGitUrl("http://github.com/obra/superpowers")).toBe(
+      "http://github.com/obra/superpowers"
+    );
   });
 });

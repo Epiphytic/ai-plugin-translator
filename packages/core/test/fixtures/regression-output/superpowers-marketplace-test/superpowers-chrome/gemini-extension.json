@@ -1,0 +1,14 @@
+{
+  "name": "superpowers-chrome",
+  "version": "1.6.1",
+  "description": "BETA: VERY LIGHTLY TESTED - Direct Chrome DevTools Protocol access via 'browsing' skill. Skill mode (17 CLI commands) + MCP mode (single use_browser tool). Zero dependencies, auto-starts Chrome.",
+  "mcpServers": {
+    "chrome": {
+      "command": "node",
+      "args": [
+        "${extensionPath}/mcp/dist/index.js"
+      ]
+    }
+  },
+  "contextFileName": "GEMINI.md"
+}

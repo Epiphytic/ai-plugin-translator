@@ -25,6 +25,21 @@ function defaultExec(
   });
 }
 
+/**
+ * Resolve a GitHub shorthand (e.g. "obra/superpowers") to a full git URL.
+ * Passes through full URLs unchanged.
+ */
+export function resolveGitUrl(input: string): string {
+  if (input.startsWith("http://") || input.startsWith("https://") || input.startsWith("git@")) {
+    return input;
+  }
+  // owner/repo shorthand
+  if (/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/.test(input)) {
+    return `https://github.com/${input}.git`;
+  }
+  return input;
+}
+
 export async function cloneToTemp(
   url: string,
   execFn: ExecFn = defaultExec

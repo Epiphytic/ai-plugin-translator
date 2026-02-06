@@ -1,0 +1,37 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "episodic-memory",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "episodic-memory"
+    },
+    {
+      "type": "command",
+      "name": "search-conversations"
+    },
+    {
+      "type": "skill",
+      "name": "remembering-conversations"
+    },
+    {
+      "type": "hook",
+      "name": "SessionStart"
+    },
+    {
+      "type": "agent",
+      "name": "search-conversations"
+    },
+    {
+      "type": "mcp-server",
+      "name": "episodic-memory"
+    }
+  ],
+  "skipped": [],
+  "warnings": [
+    "agent \"search-conversations\": dropped unsupported field \"capabilities\"",
+    "agent \"search-conversations\": dropped unsupported field \"model\"",
+    "agent \"search-conversations\": dropped unsupported field \"tools\""
+  ]
+}

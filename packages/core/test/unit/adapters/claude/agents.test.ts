@@ -9,9 +9,9 @@ const fixtures = join(__dirname, "../../../fixtures/claude-plugins");
 describe("parseClaudeAgents", () => {
   it("parses agents from agents directory", async () => {
     const agents = await parseClaudeAgents(join(fixtures, "full"));
-    expect(agents).toHaveLength(2);
+    expect(agents).toHaveLength(3);
     const names = agents.map((a) => a.name).sort();
-    expect(names).toEqual(["code-simplifier", "complex-agent"]);
+    expect(names).toEqual(["code-simplifier", "complex-agent", "yaml-tricky"]);
   });
 
   it("extracts description and model from frontmatter", async () => {
@@ -43,6 +43,14 @@ describe("parseClaudeAgents", () => {
       "semantic-search",
       "pattern-recognition",
     ]);
+  });
+
+  it("handles YAML-unfriendly descriptions via lenient fallback", async () => {
+    const agents = await parseClaudeAgents(join(fixtures, "full"));
+    const agent = agents.find((a) => a.name === "yaml-tricky")!;
+    expect(agent).toBeDefined();
+    expect(agent.description).toContain("Use this agent when");
+    expect(agent.content).toContain("You handle tricky YAML descriptions.");
   });
 
   it("returns empty array when no agents directory exists", async () => {
