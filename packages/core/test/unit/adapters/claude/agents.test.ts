@@ -9,24 +9,40 @@ const fixtures = join(__dirname, "../../../fixtures/claude-plugins");
 describe("parseClaudeAgents", () => {
   it("parses agents from agents directory", async () => {
     const agents = await parseClaudeAgents(join(fixtures, "full"));
-    expect(agents).toHaveLength(1);
-    expect(agents[0].name).toBe("code-simplifier");
+    expect(agents).toHaveLength(2);
+    const names = agents.map((a) => a.name).sort();
+    expect(names).toEqual(["code-simplifier", "complex-agent"]);
   });
 
   it("extracts description and model from frontmatter", async () => {
     const agents = await parseClaudeAgents(join(fixtures, "full"));
-    expect(agents[0].description).toBe(
+    const agent = agents.find((a) => a.name === "code-simplifier")!;
+    expect(agent.description).toBe(
       "Simplifies code for clarity and maintainability"
     );
-    expect(agents[0].model).toBe("opus");
+    expect(agent.model).toBe("opus");
   });
 
   it("extracts content body without frontmatter", async () => {
     const agents = await parseClaudeAgents(join(fixtures, "full"));
-    expect(agents[0].content).toContain(
+    const agent = agents.find((a) => a.name === "code-simplifier")!;
+    expect(agent.content).toContain(
       "You are an expert code simplification specialist."
     );
-    expect(agents[0].content).not.toContain("---");
+    expect(agent.content).not.toContain("---");
+  });
+
+  it("parses complex agent with Claude-specific fields", async () => {
+    const agents = await parseClaudeAgents(join(fixtures, "full"));
+    const agent = agents.find((a) => a.name === "complex-agent")!;
+    expect(agent.description).toBe("Agent with Claude-specific fields");
+    expect(agent.frontmatter.tools).toBe("Read, Grep, Glob, mcp__some_tool");
+    expect(agent.frontmatter.permissionMode).toBe("default");
+    expect(agent.frontmatter.skills).toBe("some-plugin:some-skill");
+    expect(agent.frontmatter.capabilities).toEqual([
+      "semantic-search",
+      "pattern-recognition",
+    ]);
   });
 
   it("returns empty array when no agents directory exists", async () => {

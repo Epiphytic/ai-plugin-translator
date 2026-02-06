@@ -11,9 +11,10 @@
  */
 
 import { execFileSync } from "child_process";
-import { existsSync, readFileSync, mkdirSync, rmSync } from "fs";
+import { existsSync, readFileSync, mkdirSync, rmSync, readdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import matter from "gray-matter";
 import { translate, translateMarketplace } from "../../src/translate.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -31,6 +32,30 @@ interface RegressionSource {
 
 interface SourcesConfig {
   regressionSources: RegressionSource[];
+}
+
+const VALID_AGENT_KEYS = new Set(["name", "description"]);
+
+function validateAgents(pluginOutputDir: string): string[] {
+  const agentsDir = join(pluginOutputDir, "agents");
+  if (!existsSync(agentsDir)) return [];
+
+  const errors: string[] = [];
+
+  for (const file of readdirSync(agentsDir)) {
+    if (!file.endsWith(".md")) continue;
+    const content = readFileSync(join(agentsDir, file), "utf-8");
+    const { data } = matter(content);
+
+    if (!data.name) errors.push(`${file}: missing required 'name'`);
+
+    for (const key of Object.keys(data)) {
+      if (!VALID_AGENT_KEYS.has(key)) {
+        errors.push(`${file}: unsupported key '${key}'`);
+      }
+    }
+  }
+  return errors;
 }
 
 function cloneOrPull(url: string, targetDir: string): void {
@@ -99,19 +124,23 @@ async function runRegression(): Promise<void> {
         }
 
         for (const report of reports) {
-          const manifestPath = join(
-            outputDir,
-            source.name,
-            report.pluginName,
-            "gemini-extension.json"
-          );
+          const pluginDir = join(outputDir, source.name, report.pluginName);
+          const manifestPath = join(pluginDir, "gemini-extension.json");
           if (!existsSync(manifestPath)) {
             errors.push(
               `${source.name}/${report.pluginName}: missing gemini-extension.json`
             );
             failed++;
           } else {
-            passed++;
+            const agentErrors = validateAgents(pluginDir);
+            if (agentErrors.length > 0) {
+              for (const ae of agentErrors) {
+                errors.push(`${source.name}/${report.pluginName}: ${ae}`);
+              }
+              failed++;
+            } else {
+              passed++;
+            }
           }
         }
       } else {
@@ -135,7 +164,17 @@ async function runRegression(): Promise<void> {
         } else {
           // Validate manifest is parseable JSON
           JSON.parse(readFileSync(manifestPath, "utf-8"));
-          passed++;
+
+          // Validate agents
+          const agentErrors = validateAgents(pluginOutputDir);
+          if (agentErrors.length > 0) {
+            for (const ae of agentErrors) {
+              errors.push(`${source.name}: ${ae}`);
+            }
+            failed++;
+          } else {
+            passed++;
+          }
         }
       }
     } catch (err) {

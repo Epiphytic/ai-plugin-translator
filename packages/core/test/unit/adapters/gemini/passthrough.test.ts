@@ -41,7 +41,7 @@ describe("generateGeminiSkill", () => {
 });
 
 describe("generateGeminiAgent", () => {
-  it("generates agent markdown preserving frontmatter", () => {
+  it("generates agent markdown with only Gemini-compatible keys", () => {
     const agent: AgentIR = {
       name: "helper",
       description: "Helps with tasks",
@@ -54,9 +54,14 @@ describe("generateGeminiAgent", () => {
       },
     };
     const result = generateGeminiAgent(agent);
-    expect(result).toContain("---");
-    expect(result).toContain("name: helper");
-    expect(result).toContain("You are a helpful assistant.");
+    expect(result.content).toContain("---");
+    expect(result.content).toContain("name: helper");
+    expect(result.content).toContain("description: Helps with tasks");
+    expect(result.content).toContain("You are a helpful assistant.");
+    expect(result.content).not.toContain("model:");
+    expect(result.warnings).toContain(
+      'agent "helper": dropped unsupported field "model"'
+    );
   });
 });
 

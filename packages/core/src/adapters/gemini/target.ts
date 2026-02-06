@@ -89,11 +89,13 @@ export class GeminiTargetAdapter implements TargetAdapter {
       const agentsDir = join(outputPath, "agents");
       await mkdir(agentsDir, { recursive: true });
       for (const agent of ir.agents) {
+        const result = generateGeminiAgent(agent);
         await writeFile(
           join(agentsDir, `${agent.name}.md`),
-          generateGeminiAgent(agent) + "\n"
+          result.content + "\n"
         );
         translated.push({ type: "agent", name: agent.name });
+        warnings.push(...result.warnings);
       }
     }
 
