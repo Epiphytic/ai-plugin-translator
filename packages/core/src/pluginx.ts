@@ -7,6 +7,7 @@ import { runStatus } from "./pluginx/commands/status.js";
 import { runUpdate } from "./pluginx/commands/update.js";
 import { runUpdateAll } from "./pluginx/commands/update-all.js";
 import { runRemove } from "./pluginx/commands/remove.js";
+import { runConsentPrompt } from "./pluginx/consent.js";
 import type { TranslationReport } from "./adapters/types.js";
 
 const program = new Command();
@@ -115,6 +116,31 @@ program
         for (const report of reports) {
           printReport(report);
         }
+      }
+    } catch (err) {
+      console.error(`Error: ${(err as Error).message}`);
+      process.exitCode = 1;
+    }
+  });
+
+program
+  .command("consent")
+  .description("Manage security consent settings")
+  .action(async () => {
+    try {
+      const level = await runConsentPrompt();
+      if (level === "declined") {
+        console.log(
+          "Consent declined. This prompt will appear again next time you run a pluginx command."
+        );
+      } else if (level === "bypass") {
+        console.log(
+          "Consent screens will be bypassed for future plugin installations. Run 'pluginx consent' to change."
+        );
+      } else {
+        console.log(
+          "Settings saved. Gemini CLI will still show a consent prompt when installing each plugin. Run 'pluginx consent' to change."
+        );
       }
     } catch (err) {
       console.error(`Error: ${(err as Error).message}`);

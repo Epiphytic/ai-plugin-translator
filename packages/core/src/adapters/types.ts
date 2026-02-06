@@ -6,9 +6,17 @@ export interface SourceAdapter {
   parse(path: string): Promise<PluginIR>;
 }
 
+export interface GenerateOptions {
+  sourcePath?: string;
+}
+
 export interface TargetAdapter {
   name: string;
-  generate(ir: PluginIR, outputPath: string): Promise<TranslationReport>;
+  generate(
+    ir: PluginIR,
+    outputPath: string,
+    options?: GenerateOptions
+  ): Promise<TranslationReport>;
 }
 
 export interface TranslationReport {

@@ -1,10 +1,11 @@
-import { mkdir, writeFile } from "fs/promises";
+import { mkdir, writeFile, readdir, copyFile } from "fs/promises";
 import { join } from "path";
 import type {
   TargetAdapter,
   TranslationReport,
   ComponentSummary,
   SkippedComponent,
+  GenerateOptions,
 } from "../types.js";
 import type { PluginIR } from "../../ir/types.js";
 import { generateGeminiManifest } from "./generators/manifest.js";
@@ -19,7 +20,8 @@ export class GeminiTargetAdapter implements TargetAdapter {
 
   async generate(
     ir: PluginIR,
-    outputPath: string
+    outputPath: string,
+    options?: GenerateOptions
   ): Promise<TranslationReport> {
     const translated: ComponentSummary[] = [];
     const skipped: SkippedComponent[] = [];
@@ -82,6 +84,23 @@ export class GeminiTargetAdapter implements TargetAdapter {
         translated.push({ type: "hook", name: hook.event });
       }
       warnings.push(...hooksResult.warnings);
+
+      // Copy hook script files from source
+      if (options?.sourcePath) {
+        const sourceHooksDir = join(options.sourcePath, "hooks");
+        try {
+          const entries = await readdir(sourceHooksDir);
+          for (const entry of entries) {
+            if (entry === "hooks.json") continue;
+            await copyFile(
+              join(sourceHooksDir, entry),
+              join(hooksDir, entry)
+            );
+          }
+        } catch {
+          // Source hooks dir may not exist (embedded hooks)
+        }
+      }
     }
 
     // Agents

@@ -1,40 +1,26 @@
 import { join } from "path";
-import { checkConsent, PLUGINX_DIR } from "../config.js";
+import { TRANSLATIONS_DIR } from "../config.js";
 import { readState, writeState, addPlugin, findPlugin } from "../state.js";
-import { pullLatest, getCurrentCommit, type ExecFn } from "../git-ops.js";
-import { linkExtension, type ExecFn as LinkExecFn } from "../link.js";
+import { pullLatest } from "../git-ops.js";
+import { linkExtension } from "../link.js";
 import { translate, translateMarketplace } from "../../translate.js";
+import { getSourceCommit } from "../resolve-source.js";
+import { ensureConsent } from "../consent.js";
+import type { BaseCommandOptions } from "../types.js";
 import type { TranslationReport } from "../../adapters/types.js";
 
-export interface UpdateOptions {
+export interface UpdateOptions extends BaseCommandOptions {
   names: string[];
-  consent?: boolean;
-  json?: boolean;
-  configPath?: string;
-  statePath?: string;
-  gitExecFn?: ExecFn;
-  linkExecFn?: LinkExecFn;
 }
-
-const TRANSLATIONS_DIR = join(
-  PLUGINX_DIR,
-  "..",
-  "pluginx-translations"
-);
 
 export async function runUpdate(
   options: UpdateOptions
 ): Promise<TranslationReport[]> {
-  const consentResult = options.consent
-    ? "bypass"
-    : await checkConsent(options.configPath);
+  const consent = await ensureConsent({
+    configPath: options.configPath,
+  });
 
-  if (consentResult === "required") {
-    console.log("CONSENT_REQUIRED");
-    process.exit(3);
-  }
-
-  const useConsent = consentResult === "bypass" || options.consent === true;
+  const useConsent = consent === "bypass" || options.consent === true;
   let state = await readState(options.statePath);
   const reports: TranslationReport[] = [];
 
@@ -46,7 +32,7 @@ export async function runUpdate(
     }
 
     if (plugin.sourceType === "git") {
-      await pullLatest(plugin.sourcePath, options.gitExecFn);
+      await pullLatest(plugin.sourcePath, options.execFn);
     }
 
     let pluginReports: TranslationReport[];
@@ -70,21 +56,15 @@ export async function runUpdate(
 
     for (const report of pluginReports) {
       const outputPath = join(TRANSLATIONS_DIR, report.pluginName);
-      await linkExtension(outputPath, useConsent, options.linkExecFn);
+      await linkExtension(outputPath, useConsent, options.execFn);
       reports.push(report);
     }
 
-    let sourceCommit: string | undefined;
-    if (plugin.sourceType === "git") {
-      try {
-        sourceCommit = await getCurrentCommit(
-          plugin.sourcePath,
-          options.gitExecFn
-        );
-      } catch {
-        // non-fatal
-      }
-    }
+    const sourceCommit = await getSourceCommit(
+      plugin.sourcePath,
+      plugin.sourceType,
+      options.execFn
+    );
 
     state = addPlugin(state, {
       ...plugin,

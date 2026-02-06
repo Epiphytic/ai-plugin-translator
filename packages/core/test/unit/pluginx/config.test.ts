@@ -1,8 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { writeFile, mkdir, rm } from "fs/promises";
+import { writeFile, mkdir, rm, readFile } from "fs/promises";
 import { join } from "path";
 import { tmpdir } from "os";
-import { readConfig, checkConsent } from "../../../src/pluginx/config.js";
+import {
+  readConfig,
+  writeConfig,
+  checkConsent,
+} from "../../../src/pluginx/config.js";
 
 describe("pluginx/config", () => {
   let tmpDir: string;
@@ -44,6 +48,33 @@ describe("pluginx/config", () => {
       await writeFile(configPath, "not json");
       const config = await readConfig(configPath);
       expect(config).toEqual({});
+    });
+  });
+
+  describe("writeConfig", () => {
+    it("writes config to specified path", async () => {
+      const configPath = join(tmpDir, "config.json");
+      await writeConfig({ consentLevel: "bypass" }, configPath);
+      const raw = await readFile(configPath, "utf-8");
+      const config = JSON.parse(raw);
+      expect(config.consentLevel).toBe("bypass");
+    });
+
+    it("creates parent directories if needed", async () => {
+      const configPath = join(tmpDir, "nested", "dir", "config.json");
+      await writeConfig({ consentLevel: "acknowledged" }, configPath);
+      const raw = await readFile(configPath, "utf-8");
+      const config = JSON.parse(raw);
+      expect(config.consentLevel).toBe("acknowledged");
+    });
+
+    it("overwrites existing config", async () => {
+      const configPath = join(tmpDir, "config.json");
+      await writeConfig({ consentLevel: "bypass" }, configPath);
+      await writeConfig({ consentLevel: "declined" }, configPath);
+      const raw = await readFile(configPath, "utf-8");
+      const config = JSON.parse(raw);
+      expect(config.consentLevel).toBe("declined");
     });
   });
 

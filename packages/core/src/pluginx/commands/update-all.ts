@@ -1,15 +1,9 @@
 import { readState } from "../state.js";
-import { runUpdate, type UpdateOptions } from "./update.js";
+import { runUpdate } from "./update.js";
+import type { BaseCommandOptions } from "../types.js";
 import type { TranslationReport } from "../../adapters/types.js";
 
-export interface UpdateAllOptions {
-  consent?: boolean;
-  json?: boolean;
-  configPath?: string;
-  statePath?: string;
-  gitExecFn?: UpdateOptions["gitExecFn"];
-  linkExecFn?: UpdateOptions["linkExecFn"];
-}
+export interface UpdateAllOptions extends BaseCommandOptions {}
 
 export async function runUpdateAll(
   options: UpdateAllOptions
@@ -29,7 +23,6 @@ export async function runUpdateAll(
     json: options.json,
     configPath: options.configPath,
     statePath: options.statePath,
-    gitExecFn: options.gitExecFn,
-    linkExecFn: options.linkExecFn,
+    execFn: options.execFn,
   });
 }

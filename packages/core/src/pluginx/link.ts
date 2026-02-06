@@ -1,21 +1,6 @@
-import { execFile } from "child_process";
+import { defaultExec, type ExecFn } from "./exec-utils.js";
 
-export type ExecFn = (
-  cmd: string,
-  args: string[]
-) => Promise<{ stdout: string; stderr: string }>;
-
-function defaultExec(
-  cmd: string,
-  args: string[]
-): Promise<{ stdout: string; stderr: string }> {
-  return new Promise((resolve, reject) => {
-    execFile(cmd, args, (error, stdout, stderr) => {
-      if (error) reject(error);
-      else resolve({ stdout, stderr });
-    });
-  });
-}
+export type { ExecFn } from "./exec-utils.js";
 
 export async function linkExtension(
   outputPath: string,

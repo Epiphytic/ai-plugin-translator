@@ -24,8 +24,9 @@ describe("end-to-end: Claude -> Gemini", () => {
     const source = new ClaudeSourceAdapter();
     const target = new GeminiTargetAdapter();
 
-    const ir = await source.parse(join(fixtures, "full"));
-    const report = await target.generate(ir, outputDir);
+    const sourcePath = join(fixtures, "full");
+    const ir = await source.parse(sourcePath);
+    const report = await target.generate(ir, outputDir, { sourcePath });
 
     // Manifest
     const manifest = JSON.parse(
@@ -50,6 +51,10 @@ describe("end-to-end: Claude -> Gemini", () => {
       readFileSync(join(outputDir, "hooks", "hooks.json"), "utf-8")
     );
     expect(hooksJson.hooks.BeforeTool).toBeDefined();
+
+    // Hook script files are copied from source
+    expect(existsSync(join(outputDir, "hooks", "check.py"))).toBe(true);
+    expect(existsSync(join(outputDir, "hooks", "post.sh"))).toBe(true);
 
     // Agents
     expect(
