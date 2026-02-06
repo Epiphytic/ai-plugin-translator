@@ -1,0 +1,17 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "laravel-simplifier",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "laravel-simplifier"
+    },
+    {
+      "type": "agent",
+      "name": "laravel-simplifier"
+    }
+  ],
+  "skipped": [],
+  "warnings": []
+}

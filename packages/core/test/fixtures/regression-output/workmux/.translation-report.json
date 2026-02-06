@@ -1,0 +1,48 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "workmux-status",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "workmux-status"
+    },
+    {
+      "type": "skill",
+      "name": "merge"
+    },
+    {
+      "type": "skill",
+      "name": "open-pr"
+    },
+    {
+      "type": "skill",
+      "name": "rebase"
+    },
+    {
+      "type": "skill",
+      "name": "worktree"
+    },
+    {
+      "type": "hook",
+      "name": "UserPromptSubmit"
+    },
+    {
+      "type": "hook",
+      "name": "Notification"
+    },
+    {
+      "type": "hook",
+      "name": "PostToolUse"
+    },
+    {
+      "type": "hook",
+      "name": "Stop"
+    }
+  ],
+  "skipped": [],
+  "warnings": [
+    "\"UserPromptSubmit\" -> \"BeforeAgent\" is an approximate mapping; behavior may differ",
+    "\"Stop\" -> \"AfterAgent\" is an approximate mapping; behavior may differ"
+  ]
+}

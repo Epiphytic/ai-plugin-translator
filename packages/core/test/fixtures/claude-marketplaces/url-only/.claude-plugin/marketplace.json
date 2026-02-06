@@ -1,0 +1,21 @@
+{
+  "name": "url-marketplace",
+  "plugins": [
+    {
+      "name": "remote-plugin-a",
+      "description": "First remote plugin",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/example/remote-a"
+      }
+    },
+    {
+      "name": "remote-plugin-b",
+      "description": "Second remote plugin",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/example/remote-b"
+      }
+    }
+  ]
+}

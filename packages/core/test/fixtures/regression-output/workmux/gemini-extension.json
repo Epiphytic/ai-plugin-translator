@@ -1,0 +1,5 @@
+{
+  "name": "workmux-status",
+  "version": "1.0.0",
+  "description": "Display Claude agent status in tmux window names via workmux"
+}

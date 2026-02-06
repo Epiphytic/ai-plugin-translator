@@ -1,0 +1,15 @@
+{
+  "name": "local-marketplace",
+  "plugins": [
+    {
+      "name": "root-plugin",
+      "description": "Self-referencing root plugin",
+      "source": "./"
+    },
+    {
+      "name": "sub-plugin",
+      "description": "A subdirectory plugin",
+      "source": "./sub-plugin"
+    }
+  ]
+}

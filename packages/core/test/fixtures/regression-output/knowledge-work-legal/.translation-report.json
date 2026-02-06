@@ -1,0 +1,61 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "legal",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "legal"
+    },
+    {
+      "type": "command",
+      "name": "brief"
+    },
+    {
+      "type": "command",
+      "name": "respond"
+    },
+    {
+      "type": "command",
+      "name": "review-contract"
+    },
+    {
+      "type": "command",
+      "name": "triage-nda"
+    },
+    {
+      "type": "command",
+      "name": "vendor-check"
+    },
+    {
+      "type": "skill",
+      "name": "canned-responses"
+    },
+    {
+      "type": "skill",
+      "name": "compliance"
+    },
+    {
+      "type": "skill",
+      "name": "contract-review"
+    },
+    {
+      "type": "skill",
+      "name": "legal-risk-assessment"
+    },
+    {
+      "type": "skill",
+      "name": "meeting-briefing"
+    },
+    {
+      "type": "skill",
+      "name": "nda-triage"
+    },
+    {
+      "type": "mcp-server",
+      "name": "mcpServers"
+    }
+  ],
+  "skipped": [],
+  "warnings": []
+}

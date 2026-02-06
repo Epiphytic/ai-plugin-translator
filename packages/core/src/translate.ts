@@ -4,6 +4,11 @@ import { AdapterRegistry } from "./adapters/registry.js";
 import { ClaudeSourceAdapter } from "./adapters/claude/source.js";
 import { GeminiTargetAdapter } from "./adapters/gemini/target.js";
 import type { TranslationReport } from "./adapters/types.js";
+import {
+  hasMarketplaceJson,
+  parseClaudeMarketplace,
+} from "./adapters/claude/parsers/marketplace.js";
+import { cloneToTemp, type ClonedRepo } from "./utils/git.js";
 
 export function createDefaultRegistry(): AdapterRegistry {
   const registry = new AdapterRegistry();
@@ -52,6 +57,59 @@ export async function translateMarketplace(
   registry?: AdapterRegistry
 ): Promise<TranslationReport[]> {
   const reg = registry ?? createDefaultRegistry();
+
+  if (await hasMarketplaceJson(options.source)) {
+    return translateMarketplaceFromJson(options, reg);
+  }
+
+  return translateMarketplaceFromDirScan(options, reg);
+}
+
+async function translateMarketplaceFromJson(
+  options: TranslateMarketplaceOptions,
+  reg: AdapterRegistry
+): Promise<TranslationReport[]> {
+  const marketplace = await parseClaudeMarketplace(options.source);
+  const reports: TranslationReport[] = [];
+  const clonedRepos: ClonedRepo[] = [];
+
+  try {
+    for (const plugin of marketplace.plugins) {
+      let pluginPath: string;
+
+      if (plugin.type === "remote") {
+        const cloned = await cloneToTemp(plugin.resolvedPath);
+        clonedRepos.push(cloned);
+        pluginPath = cloned.path;
+      } else {
+        pluginPath = plugin.resolvedPath;
+      }
+
+      const sourceAdapter = options.from
+        ? reg.getSource(options.from)
+        : await reg.detectSource(pluginPath);
+
+      if (!sourceAdapter) continue;
+
+      const targetAdapter = reg.getTarget(options.to);
+      const ir = await sourceAdapter.parse(pluginPath);
+      const outputPath = join(options.outputDir, ir.manifest.name);
+      const report = await targetAdapter.generate(ir, outputPath);
+      reports.push(report);
+    }
+  } finally {
+    for (const repo of clonedRepos) {
+      await repo.cleanup();
+    }
+  }
+
+  return reports;
+}
+
+async function translateMarketplaceFromDirScan(
+  options: TranslateMarketplaceOptions,
+  reg: AdapterRegistry
+): Promise<TranslationReport[]> {
   const reports: TranslationReport[] = [];
 
   const entries = await readdir(options.source);

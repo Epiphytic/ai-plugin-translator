@@ -31,6 +31,18 @@
       "path": "laravel-simplifier",
       "type": "single",
       "notes": "Agent-only plugin, minimal structure baseline"
+    },
+    {
+      "name": "superpowers-marketplace",
+      "url": "https://github.com/obra/superpowers-marketplace",
+      "type": "marketplace",
+      "notes": "URL-only marketplace with 7 remote plugin refs"
+    },
+    {
+      "name": "knowledge-work-plugins",
+      "url": "https://github.com/anthropics/knowledge-work-plugins",
+      "type": "marketplace",
+      "notes": "Relative paths marketplace with local plugin refs"
     }
   ]
 }

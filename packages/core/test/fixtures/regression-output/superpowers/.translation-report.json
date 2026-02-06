@@ -1,0 +1,109 @@
+{
+  "source": "claude",
+  "target": "gemini",
+  "pluginName": "superpowers",
+  "translated": [
+    {
+      "type": "manifest",
+      "name": "superpowers"
+    },
+    {
+      "type": "command",
+      "name": "brainstorm"
+    },
+    {
+      "type": "command",
+      "name": "execute-plan"
+    },
+    {
+      "type": "command",
+      "name": "write-plan"
+    },
+    {
+      "type": "skill",
+      "name": "brainstorming"
+    },
+    {
+      "type": "skill",
+      "name": "dispatching-parallel-agents"
+    },
+    {
+      "type": "skill",
+      "name": "executing-plans"
+    },
+    {
+      "type": "skill",
+      "name": "finishing-a-development-branch"
+    },
+    {
+      "type": "skill",
+      "name": "receiving-code-review"
+    },
+    {
+      "type": "skill",
+      "name": "requesting-code-review"
+    },
+    {
+      "type": "skill",
+      "name": "subagent-driven-development"
+    },
+    {
+      "type": "skill",
+      "name": "systematic-debugging"
+    },
+    {
+      "type": "skill",
+      "name": "test-driven-development"
+    },
+    {
+      "type": "skill",
+      "name": "using-git-worktrees"
+    },
+    {
+      "type": "skill",
+      "name": "using-superpowers"
+    },
+    {
+      "type": "skill",
+      "name": "verification-before-completion"
+    },
+    {
+      "type": "skill",
+      "name": "writing-plans"
+    },
+    {
+      "type": "skill",
+      "name": "writing-skills"
+    },
+    {
+      "type": "hook",
+      "name": "SessionStart"
+    },
+    {
+      "type": "agent",
+      "name": "code-reviewer"
+    }
+  ],
+  "skipped": [
+    {
+      "type": "command-feature",
+      "name": "brainstorm:disable-model-invocation",
+      "reason": "disable-model-invocation has no equivalent in target ecosystems"
+    },
+    {
+      "type": "command-feature",
+      "name": "execute-plan:disable-model-invocation",
+      "reason": "disable-model-invocation has no equivalent in target ecosystems"
+    },
+    {
+      "type": "command-feature",
+      "name": "write-plan:disable-model-invocation",
+      "reason": "disable-model-invocation has no equivalent in target ecosystems"
+    }
+  ],
+  "warnings": [
+    "command \"brainstorm\": disable-model-invocation not supported in Gemini TOML commands",
+    "command \"execute-plan\": disable-model-invocation not supported in Gemini TOML commands",
+    "command \"write-plan\": disable-model-invocation not supported in Gemini TOML commands"
+  ]
+}
