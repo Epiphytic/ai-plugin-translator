@@ -106,5 +106,12 @@
     "command \"execute-plan\": disable-model-invocation not supported in Gemini TOML commands",
     "command \"write-plan\": disable-model-invocation not supported in Gemini TOML commands",
     "agent \"code-reviewer\": dropped unsupported field \"model\""
-  ]
+  ],
+  "validation": {
+    "valid": true,
+    "parity": {
+      "passed": true,
+      "errors": []
+    }
+  }
 }

@@ -15,5 +15,12 @@
   "skipped": [],
   "warnings": [
     "\"Stop\" -> \"AfterAgent\" is an approximate mapping; behavior may differ"
-  ]
+  ],
+  "validation": {
+    "valid": true,
+    "parity": {
+      "passed": true,
+      "errors": []
+    }
+  }
 }

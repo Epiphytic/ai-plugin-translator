@@ -61,5 +61,12 @@
     }
   ],
   "skipped": [],
-  "warnings": []
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "parity": {
+      "passed": true,
+      "errors": []
+    }
+  }
 }

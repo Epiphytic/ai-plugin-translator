@@ -7,6 +7,8 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { ClaudeSourceAdapter } from "../../src/adapters/claude/source.js";
 import { GeminiTargetAdapter } from "../../src/adapters/gemini/target.js";
+import { translate } from "../../src/translate.js";
+import { checkTranslationParity } from "../../src/validate.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const fixtures = join(__dirname, "../fixtures/claude-plugins");
@@ -83,5 +85,49 @@ describe("end-to-end: Claude -> Gemini", () => {
     expect(manifest.name).toBe("basic-plugin");
     expect(report.translated.length).toBeGreaterThan(0);
     expect(report.warnings).toEqual([]);
+  });
+
+  it("parity check passes for full plugin translation", async () => {
+    const source = new ClaudeSourceAdapter();
+    const target = new GeminiTargetAdapter();
+
+    const ir = await source.parse(join(fixtures, "full"));
+    const report = await target.generate(ir, outputDir);
+    const parity = checkTranslationParity(ir, report);
+
+    expect(parity.passed).toBe(true);
+    expect(parity.errors).toEqual([]);
+  });
+
+  it("parity check passes for minimal plugin translation", async () => {
+    const source = new ClaudeSourceAdapter();
+    const target = new GeminiTargetAdapter();
+
+    const ir = await source.parse(join(fixtures, "basic"));
+    const report = await target.generate(ir, outputDir);
+    const parity = checkTranslationParity(ir, report);
+
+    expect(parity.passed).toBe(true);
+    expect(parity.errors).toEqual([]);
+  });
+
+  it("translate() includes validation in report", async () => {
+    const report = await translate({
+      from: "claude",
+      to: "gemini",
+      source: join(fixtures, "full"),
+      output: outputDir,
+    });
+
+    expect(report.validation).toBeDefined();
+    expect(report.validation!.parity.passed).toBe(true);
+    expect(report.validation!.parity.errors).toEqual([]);
+
+    // Validation should also be persisted in the report file
+    const savedReport = JSON.parse(
+      readFileSync(join(outputDir, ".translation-report.json"), "utf-8")
+    );
+    expect(savedReport.validation).toBeDefined();
+    expect(savedReport.validation.parity.passed).toBe(true);
   });
 });

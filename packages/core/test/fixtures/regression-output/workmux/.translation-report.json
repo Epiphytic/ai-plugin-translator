@@ -44,5 +44,12 @@
   "warnings": [
     "\"UserPromptSubmit\" -> \"BeforeAgent\" is an approximate mapping; behavior may differ",
     "\"Stop\" -> \"AfterAgent\" is an approximate mapping; behavior may differ"
-  ]
+  ],
+  "validation": {
+    "valid": true,
+    "parity": {
+      "passed": true,
+      "errors": []
+    }
+  }
 }

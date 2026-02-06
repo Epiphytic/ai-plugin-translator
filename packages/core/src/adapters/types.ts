@@ -18,6 +18,18 @@ export interface TranslationReport {
   translated: ComponentSummary[];
   skipped: SkippedComponent[];
   warnings: string[];
+  validation?: ValidationResult;
+}
+
+export interface ValidationResult {
+  valid: boolean;
+  parity: ParityResult;
+  geminiCli?: { passed: boolean; error?: string };
+}
+
+export interface ParityResult {
+  passed: boolean;
+  errors: string[];
 }
 
 export interface ComponentSummary {

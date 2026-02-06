@@ -15,5 +15,12 @@
   "skipped": [],
   "warnings": [
     "agent \"laravel-simplifier\": dropped unsupported field \"model\""
-  ]
+  ],
+  "validation": {
+    "valid": true,
+    "parity": {
+      "passed": true,
+      "errors": []
+    }
+  }
 }

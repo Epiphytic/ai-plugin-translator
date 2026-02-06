@@ -33,10 +33,20 @@ program
           to: opts.to,
           source,
           output,
+          geminiValidate: true,
         });
         printReport(report);
-        process.exitCode =
-          report.skipped.length > 0 || report.warnings.length > 0 ? 2 : 0;
+        printValidation(report);
+        if (report.validation && !report.validation.valid) {
+          process.exitCode = 1;
+        } else if (
+          report.skipped.length > 0 ||
+          report.warnings.length > 0
+        ) {
+          process.exitCode = 2;
+        } else {
+          process.exitCode = 0;
+        }
       } catch (err) {
         console.error(`Error: ${(err as Error).message}`);
         process.exitCode = 1;
@@ -63,9 +73,11 @@ program
           to: opts.to,
           source,
           outputDir,
+          geminiValidate: true,
         });
         console.log(`Translated ${reports.length} plugins:`);
         let hasWarnings = false;
+        let hasValidationFailure = false;
         for (const report of reports) {
           console.log(`\n  ${report.pluginName}:`);
           console.log(
@@ -79,8 +91,12 @@ program
             console.log(`    Warnings: ${report.warnings.length}`);
             hasWarnings = true;
           }
+          printValidation(report);
+          if (report.validation && !report.validation.valid) {
+            hasValidationFailure = true;
+          }
         }
-        process.exitCode = hasWarnings ? 2 : 0;
+        process.exitCode = hasValidationFailure ? 1 : hasWarnings ? 2 : 0;
       } catch (err) {
         console.error(`Error: ${(err as Error).message}`);
         process.exitCode = 1;
@@ -96,6 +112,32 @@ program
     console.log("Source adapters:", registry.listSources().join(", "));
     console.log("Target adapters:", registry.listTargets().join(", "));
   });
+
+function printValidation(report: TranslationReport): void {
+  const v = report.validation;
+  if (!v) return;
+
+  console.log(`\n  Validation: ${v.valid ? "PASSED" : "FAILED"}`);
+
+  if (!v.parity.passed) {
+    console.log(`    Parity check FAILED:`);
+    for (const e of v.parity.errors) {
+      console.log(`      - ${e}`);
+    }
+  } else {
+    console.log(`    Parity check: passed`);
+  }
+
+  if (v.geminiCli) {
+    if (v.geminiCli.passed) {
+      console.log(`    gemini extensions validate: passed`);
+    } else {
+      console.log(
+        `    gemini extensions validate FAILED: ${v.geminiCli.error}`
+      );
+    }
+  }
+}
 
 function printReport(report: TranslationReport): void {
   console.log(

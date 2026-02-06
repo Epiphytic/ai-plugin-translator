@@ -1,4 +1,5 @@
 import { readdir, stat } from "fs/promises";
+import { writeFile } from "fs/promises";
 import { join } from "path";
 import { AdapterRegistry } from "./adapters/registry.js";
 import { ClaudeSourceAdapter } from "./adapters/claude/source.js";
@@ -9,6 +10,7 @@ import {
   parseClaudeMarketplace,
 } from "./adapters/claude/parsers/marketplace.js";
 import { cloneToTemp, type ClonedRepo } from "./utils/git.js";
+import { validateTranslation, type ValidateOptions } from "./validate.js";
 
 export function createDefaultRegistry(): AdapterRegistry {
   const registry = new AdapterRegistry();
@@ -22,6 +24,8 @@ export interface TranslateOptions {
   to: string;
   source: string;
   output: string;
+  /** Run `gemini extensions validate` after translation. Default: false */
+  geminiValidate?: boolean;
 }
 
 export async function translate(
@@ -42,7 +46,27 @@ export async function translate(
 
   const targetAdapter = reg.getTarget(options.to);
   const ir = await sourceAdapter.parse(options.source);
-  return targetAdapter.generate(ir, options.output);
+  const report = await targetAdapter.generate(ir, options.output);
+
+  // Post-translation validation: parity check always runs,
+  // gemini CLI validate only when opted in
+  const validateOpts: ValidateOptions = {
+    geminiValidate: options.geminiValidate,
+  };
+  report.validation = validateTranslation(
+    ir,
+    report,
+    options.output,
+    validateOpts
+  );
+
+  // Re-write report file with validation results
+  await writeFile(
+    join(options.output, ".translation-report.json"),
+    JSON.stringify(report, null, 2) + "\n"
+  );
+
+  return report;
 }
 
 export interface TranslateMarketplaceOptions {
@@ -50,6 +74,8 @@ export interface TranslateMarketplaceOptions {
   to: string;
   source: string;
   outputDir: string;
+  /** Run `gemini extensions validate` after translation. Default: false */
+  geminiValidate?: boolean;
 }
 
 export async function translateMarketplace(
@@ -73,6 +99,10 @@ async function translateMarketplaceFromJson(
   const reports: TranslationReport[] = [];
   const clonedRepos: ClonedRepo[] = [];
 
+  const validateOpts: ValidateOptions = {
+    geminiValidate: options.geminiValidate,
+  };
+
   try {
     for (const plugin of marketplace.plugins) {
       let pluginPath: string;
@@ -95,6 +125,18 @@ async function translateMarketplaceFromJson(
       const ir = await sourceAdapter.parse(pluginPath);
       const outputPath = join(options.outputDir, ir.manifest.name);
       const report = await targetAdapter.generate(ir, outputPath);
+
+      report.validation = validateTranslation(
+        ir,
+        report,
+        outputPath,
+        validateOpts
+      );
+      await writeFile(
+        join(outputPath, ".translation-report.json"),
+        JSON.stringify(report, null, 2) + "\n"
+      );
+
       reports.push(report);
     }
   } finally {
@@ -112,6 +154,10 @@ async function translateMarketplaceFromDirScan(
 ): Promise<TranslationReport[]> {
   const reports: TranslationReport[] = [];
 
+  const validateOpts: ValidateOptions = {
+    geminiValidate: options.geminiValidate,
+  };
+
   const entries = await readdir(options.source);
   for (const entry of entries) {
     const entryPath = join(options.source, entry);
@@ -128,6 +174,18 @@ async function translateMarketplaceFromDirScan(
     const ir = await sourceAdapter.parse(entryPath);
     const outputPath = join(options.outputDir, ir.manifest.name);
     const report = await targetAdapter.generate(ir, outputPath);
+
+    report.validation = validateTranslation(
+      ir,
+      report,
+      outputPath,
+      validateOpts
+    );
+    await writeFile(
+      join(outputPath, ".translation-report.json"),
+      JSON.stringify(report, null, 2) + "\n"
+    );
+
     reports.push(report);
   }
 

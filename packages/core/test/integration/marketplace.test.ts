@@ -47,6 +47,21 @@ describe("translateMarketplace with marketplace.json", () => {
     expect(names).toEqual(["root-plugin", "sub-plugin"]);
   });
 
+  it("includes validation in marketplace translation reports", async () => {
+    const reports = await translateMarketplace({
+      from: "claude",
+      to: "gemini",
+      source: join(marketplaceFixtures, "local-only"),
+      outputDir,
+    });
+
+    for (const report of reports) {
+      expect(report.validation).toBeDefined();
+      expect(report.validation!.parity.passed).toBe(true);
+      expect(report.validation!.parity.errors).toEqual([]);
+    }
+  });
+
   it("falls back to directory scanning when no marketplace.json exists", async () => {
     // The claude-plugins fixture directory has subdirectories (basic, full)
     // that are valid plugins but no marketplace.json
