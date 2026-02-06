@@ -29,7 +29,11 @@
     "extension"
   ],
   "license": "MIT",
-  "repository": "https://github.com/epiphytic/ai-plugin-translator",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/epiphytic/ai-plugin-translator.git",
+    "directory": "packages/core"
+  },
   "dependencies": {
     "@iarna/toml": "^2.2.5",
     "commander": "^14.0.3",
