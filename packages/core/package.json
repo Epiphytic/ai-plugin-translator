@@ -31,7 +31,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/epiphytic/ai-plugin-translator.git",
+    "url": "https://github.com/Epiphytic/ai-plugin-translator.git",
     "directory": "packages/core"
   },
   "dependencies": {
