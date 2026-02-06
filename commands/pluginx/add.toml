@@ -2,18 +2,52 @@ prompt = """You are the pluginx extension manager. The user wants to add a Claud
 
 Arguments: {{args}} (a GitHub URL or local path to a Claude Code plugin)
 
-Steps:
-1. Clone the repository if a URL is provided:
-   !{git clone {{args}} /tmp/pluginx-source-$(date +%s)}
-   If it's a local path, use it directly.
+STEP 0 — Check consent level:
+!{cat ~/.gemini/extensions/pluginx/config.json 2>/dev/null || echo '{}'}
 
-2. Translate the plugin to Gemini format:
-   !{npx ai-plugin-translator translate --from claude --to gemini /tmp/pluginx-source-* ~/.gemini/extensions/pluginx-translations/$(basename {{args}} .git)}
+Parse the JSON output. Check the "consentLevel" field:
 
-3. Link the translated extension:
-   !{gemini extensions link ~/.gemini/extensions/pluginx-translations/$(basename {{args}} .git)}
+- If consentLevel is "declined" OR the file is empty/missing (no consentLevel field):
+  You MUST run the first-time consent flow before proceeding. Display this warning:
 
-4. Update tracking state in ~/.gemini/extensions/pluginx/state.json
+  ---
+  ⚠️  PLUGINX SECURITY NOTICE
 
-5. Report the translation results to the user, including any skipped components or warnings.
+  pluginx is an EXPERIMENTAL tool that translates Claude Code plugins into Gemini CLI extensions.
+
+  By using pluginx, you are installing code from third-party plugin developers into your Gemini CLI environment. These plugins may contain arbitrary shell commands in hooks, MCP servers, and command prompts.
+
+  ONLY install plugins from developers that you trust.
+
+  Please choose one of the following options:
+  ---
+
+  Present these three choices:
+  1. "Yes, I understand the risks and want to bypass consent screens in the future" → save consentLevel "bypass"
+  2. "Yes, I understand the risks" (recommended) → save consentLevel "acknowledged"
+  3. "No, I don't consent" → save consentLevel "declined", then STOP. Do not continue.
+
+  Save the choice:
+  !{mkdir -p ~/.gemini/extensions/pluginx && echo '{"consentLevel":"<CHOICE>"}' > ~/.gemini/extensions/pluginx/config.json}
+
+  If they chose option 3, STOP HERE. Do not proceed with installation.
+
+- If consentLevel is "acknowledged" or "bypass": proceed to Step 1.
+
+STEP 1 — Clone the repository if a URL is provided:
+!{git clone {{args}} /tmp/pluginx-source-$(date +%s)}
+If it's a local path, use it directly.
+
+STEP 2 — Translate the plugin to Gemini format:
+!{npx ai-plugin-translator translate --from claude --to gemini /tmp/pluginx-source-* ~/.gemini/extensions/pluginx-translations/$(basename {{args}} .git)}
+
+STEP 3 — Link the translated extension.
+If consentLevel is "bypass", include --consent:
+!{gemini extensions link --consent ~/.gemini/extensions/pluginx-translations/$(basename {{args}} .git)}
+Otherwise (consentLevel is "acknowledged"):
+!{gemini extensions link ~/.gemini/extensions/pluginx-translations/$(basename {{args}} .git)}
+
+STEP 4 — Update tracking state in ~/.gemini/extensions/pluginx/state.json
+
+STEP 5 — Report the translation results to the user, including any skipped components or warnings.
 """
