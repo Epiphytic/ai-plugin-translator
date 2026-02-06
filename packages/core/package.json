@@ -1,6 +1,6 @@
 {
-  "name": "ai-plugin-translator",
-  "version": "0.1.0",
+  "name": "@epiphytic/ai-plugin-translator",
+  "version": "0.0.0-semantically-released",
   "description": "Deterministic CLI to translate AI coding agent plugins between ecosystems",
   "type": "module",
   "main": "dist/index.js",
@@ -8,6 +8,9 @@
   "bin": {
     "ai-plugin-translator": "dist/cli.js",
     "pluginx": "dist/pluginx.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "tsc",
@@ -26,7 +29,7 @@
     "extension"
   ],
   "license": "MIT",
-  "repository": "https://github.com/badal-io/ai-plugin-translator",
+  "repository": "https://github.com/epiphytic/ai-plugin-translator",
   "dependencies": {
     "@iarna/toml": "^2.2.5",
     "commander": "^14.0.3",
