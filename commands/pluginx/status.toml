@@ -1,12 +1,5 @@
-prompt = """You are the pluginx extension manager. The user wants to check the status of their translated plugins.
+prompt = """You are the pluginx extension manager. Run:
+!{npx pluginx status}
 
-Steps:
-1. Read tracking state from ~/.gemini/extensions/pluginx/state.json
-2. For each tracked plugin, read .pluginx-meta.json from the translated output
-3. Check if the source has changed since last translation by comparing git refs
-4. Display a table showing:
-   - Plugin name
-   - Source URL
-   - Last translated date
-   - Whether it's up to date or outdated
+Display the output to the user.
 """

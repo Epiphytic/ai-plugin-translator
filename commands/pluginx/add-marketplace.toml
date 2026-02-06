@@ -1,53 +1,29 @@
-prompt = """You are the pluginx extension manager. The user wants to add all plugins from a Claude Code plugin marketplace.
+prompt = """You are the pluginx extension manager. Run:
+!{npx pluginx add-marketplace {{args}}}
 
-Arguments: {{args}} (a GitHub URL or local path to a marketplace repository)
+If the output contains "CONSENT_REQUIRED", run the consent flow:
 
-STEP 0 — Check consent level:
-!{cat ~/.gemini/extensions/pluginx/config.json 2>/dev/null || echo '{}'}
+Display this warning:
+---
+PLUGINX SECURITY NOTICE
 
-Parse the JSON output. Check the "consentLevel" field:
+pluginx is an EXPERIMENTAL tool that translates Claude Code plugins into Gemini CLI extensions.
 
-- If consentLevel is "declined" OR the file is empty/missing (no consentLevel field):
-  You MUST run the first-time consent flow before proceeding. Display this warning:
+By using pluginx, you are installing code from third-party plugin developers into your Gemini CLI environment. These plugins may contain arbitrary shell commands in hooks, MCP servers, and command prompts.
 
-  ---
-  ⚠️  PLUGINX SECURITY NOTICE
+ONLY install plugins from developers that you trust.
+---
 
-  pluginx is an EXPERIMENTAL tool that translates Claude Code plugins into Gemini CLI extensions.
+Present these three choices:
+1. "Yes, I understand the risks and want to bypass consent screens in the future" -> save consentLevel "bypass"
+2. "Yes, I understand the risks" (recommended) -> save consentLevel "acknowledged"
+3. "No, I don't consent" -> save consentLevel "declined", then STOP.
 
-  By using pluginx, you are installing code from third-party plugin developers into your Gemini CLI environment. These plugins may contain arbitrary shell commands in hooks, MCP servers, and command prompts.
+Save the choice:
+!{mkdir -p ~/.gemini/extensions/pluginx && echo '{"consentLevel":"<CHOICE>"}' > ~/.gemini/extensions/pluginx/config.json}
 
-  ONLY install plugins from developers that you trust.
+If they chose option 3, STOP. Otherwise, re-run:
+!{npx pluginx add-marketplace {{args}}}
 
-  Please choose one of the following options:
-  ---
-
-  Present these three choices:
-  1. "Yes, I understand the risks and want to bypass consent screens in the future" → save consentLevel "bypass"
-  2. "Yes, I understand the risks" (recommended) → save consentLevel "acknowledged"
-  3. "No, I don't consent" → save consentLevel "declined", then STOP. Do not continue.
-
-  Save the choice:
-  !{mkdir -p ~/.gemini/extensions/pluginx && echo '{"consentLevel":"<CHOICE>"}' > ~/.gemini/extensions/pluginx/config.json}
-
-  If they chose option 3, STOP HERE. Do not proceed with installation.
-
-- If consentLevel is "acknowledged" or "bypass": proceed to Step 1.
-
-STEP 1 — Clone the marketplace repository if a URL is provided:
-!{git clone {{args}} /tmp/pluginx-marketplace-$(date +%s)}
-
-STEP 2 — Translate all plugins in the marketplace:
-!{npx ai-plugin-translator translate-marketplace --from claude --to gemini /tmp/pluginx-marketplace-* ~/.gemini/extensions/pluginx-translations}
-
-STEP 3 — Link each translated extension.
-For each subdirectory in the output, run:
-If consentLevel is "bypass", include --consent:
-!{gemini extensions link --consent ~/.gemini/extensions/pluginx-translations/<plugin-name>}
-Otherwise (consentLevel is "acknowledged"):
-!{gemini extensions link ~/.gemini/extensions/pluginx-translations/<plugin-name>}
-
-STEP 4 — Update tracking state in ~/.gemini/extensions/pluginx/state.json with type "marketplace"
-
-STEP 5 — Report the translation results for all plugins, including any skipped components or warnings.
+Otherwise (no CONSENT_REQUIRED), display the output to the user.
 """

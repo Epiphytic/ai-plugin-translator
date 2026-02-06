@@ -6,7 +6,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "ai-plugin-translator": "dist/cli.js"
+    "ai-plugin-translator": "dist/cli.js",
+    "pluginx": "dist/pluginx.js"
   },
   "scripts": {
     "build": "tsc",
