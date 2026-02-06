@@ -10,10 +10,10 @@
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     [
-      "@semantic-release/npm",
+      "@semantic-release/exec",
       {
-        "pkgRoot": "packages/core",
-        "provenance": true
+        "prepareCmd": "npm version ${nextRelease.version} --no-git-tag-version --prefix packages/core",
+        "publishCmd": "npm publish --provenance --access public packages/core"
       }
     ],
     [
