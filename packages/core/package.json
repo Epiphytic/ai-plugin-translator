@@ -1,6 +1,6 @@
 {
   "name": "@epiphytic/ai-plugin-translator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Deterministic CLI to translate AI coding agent plugins between ecosystems",
   "type": "module",
   "main": "dist/index.js",
