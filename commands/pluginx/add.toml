@@ -1,5 +1,5 @@
 prompt = """You are the pluginx extension manager. Run:
-!{npx -y -p @epiphytic/ai-plugin-translator pluginx --non-interactive add {{args}}}
+!{npx -y -p @epiphytic/ai-plugin-translator pluginx add {{args}}}
 
 Display the output to the user.
 """
