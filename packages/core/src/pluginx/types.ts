@@ -10,6 +10,8 @@ export interface BaseCommandOptions {
   configPath?: string;
   statePath?: string;
   execFn?: ExecFn;
+  nonInteractive?: boolean;
+  translationsDir?: string;
 }
 
 export interface TrackedPlugin {

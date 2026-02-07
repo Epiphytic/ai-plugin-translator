@@ -18,7 +18,8 @@
     "test:watch": "vitest",
     "test:regression": "npx tsx test/regression/run.ts",
     "test:regression:superpowers": "npx tsx test/regression/superpowers-marketplace.test.ts",
-    "test:smoke": "npx tsx test/smoke/gemini-link.test.ts",
+    "test:smoke": "vitest run --config vitest.smoke.config.ts",
+    "test:smoke:gemini-link": "npx tsx test/smoke/gemini-link.test.ts",
     "lint": "tsc --noEmit"
   },
   "keywords": [

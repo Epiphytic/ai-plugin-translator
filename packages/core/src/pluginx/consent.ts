@@ -21,6 +21,7 @@ interface ConsentOptions {
   configPath?: string;
   input?: NodeJS.ReadableStream;
   output?: NodeJS.WritableStream;
+  nonInteractive?: boolean;
 }
 
 function openTtyStreams(): {
@@ -59,6 +60,14 @@ function getInteractiveStreams(options?: ConsentOptions): {
 export async function runConsentPrompt(
   options?: ConsentOptions
 ): Promise<ConsentLevel> {
+  if (options?.nonInteractive) {
+    process.stderr.write(
+      "Non-interactive mode: auto-acknowledging pluginx consent.\n"
+    );
+    await writeConfig({ consentLevel: "acknowledged" }, options?.configPath);
+    return "acknowledged";
+  }
+
   const { input, output } = getInteractiveStreams(options);
 
   // Write the security banner
@@ -98,7 +107,10 @@ export async function ensureConsent(
     return result;
   }
 
-  const level = await runConsentPrompt(options);
+  const level = await runConsentPrompt({
+    ...options,
+    nonInteractive: options?.nonInteractive,
+  });
 
   if (level === "declined") {
     console.log(

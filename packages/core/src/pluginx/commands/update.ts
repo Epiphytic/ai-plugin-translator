@@ -18,9 +18,11 @@ export async function runUpdate(
 ): Promise<TranslationReport[]> {
   const consent = await ensureConsent({
     configPath: options.configPath,
+    nonInteractive: options.nonInteractive,
   });
 
   const useConsent = consent === "bypass" || options.consent === true;
+  const translationsDir = options.translationsDir ?? TRANSLATIONS_DIR;
   let state = await readState(options.statePath);
   const reports: TranslationReport[] = [];
 
@@ -42,7 +44,7 @@ export async function runUpdate(
         from: "claude",
         to: "gemini",
         source: plugin.sourcePath,
-        outputDir: TRANSLATIONS_DIR,
+        outputDir: translationsDir,
       });
     } else {
       const report = await translate({
@@ -55,7 +57,7 @@ export async function runUpdate(
     }
 
     for (const report of pluginReports) {
-      const outputPath = join(TRANSLATIONS_DIR, report.pluginName);
+      const outputPath = join(translationsDir, report.pluginName);
       await linkExtension(outputPath, useConsent, options.execFn);
       reports.push(report);
     }

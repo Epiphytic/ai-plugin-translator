@@ -20,6 +20,7 @@ export interface AddResult {
 export async function runAdd(options: AddOptions): Promise<AddResult> {
   const consent = await ensureConsent({
     configPath: options.configPath,
+    nonInteractive: options.nonInteractive,
   });
 
   const useConsent = consent === "bypass" || options.consent === true;
@@ -29,7 +30,8 @@ export async function runAdd(options: AddOptions): Promise<AddResult> {
     options.execFn
   );
 
-  const outputPath = join(TRANSLATIONS_DIR, name);
+  const translationsDir = options.translationsDir ?? TRANSLATIONS_DIR;
+  const outputPath = join(translationsDir, name);
 
   const report = await translate({
     from: "claude",

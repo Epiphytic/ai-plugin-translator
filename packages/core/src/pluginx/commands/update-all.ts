@@ -24,5 +24,7 @@ export async function runUpdateAll(
     configPath: options.configPath,
     statePath: options.statePath,
     execFn: options.execFn,
+    nonInteractive: options.nonInteractive,
+    translationsDir: options.translationsDir,
   });
 }

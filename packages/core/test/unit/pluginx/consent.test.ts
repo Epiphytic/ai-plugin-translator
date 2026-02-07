@@ -75,6 +75,18 @@ describe("pluginx/consent", () => {
       expect(saved.consentLevel).toBe("declined");
     });
 
+    it("auto-acknowledges in non-interactive mode without prompting", async () => {
+      const result = await runConsentPrompt({
+        configPath,
+        nonInteractive: true,
+      });
+
+      expect(result).toBe("acknowledged");
+      expect(mockedSelect).not.toHaveBeenCalled();
+      const saved = JSON.parse(await readFile(configPath, "utf-8"));
+      expect(saved.consentLevel).toBe("acknowledged");
+    });
+
     it("writes security banner to output", async () => {
       mockedSelect.mockResolvedValue("acknowledged");
       let outputData = "";
@@ -134,6 +146,16 @@ describe("pluginx/consent", () => {
 
       expect(result).toBe("acknowledged");
       expect(mockedSelect).toHaveBeenCalledOnce();
+    });
+
+    it("auto-acknowledges in non-interactive mode when consent required", async () => {
+      const result = await ensureConsent({
+        configPath,
+        nonInteractive: true,
+      });
+
+      expect(result).toBe("acknowledged");
+      expect(mockedSelect).not.toHaveBeenCalled();
     });
 
     it("exits process when user declines", async () => {

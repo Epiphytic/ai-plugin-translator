@@ -12,10 +12,23 @@ import type { TranslationReport } from "./adapters/types.js";
 
 const program = new Command();
 
+interface GlobalOpts {
+  nonInteractive?: boolean;
+  configPath?: string;
+  statePath?: string;
+}
+
+function globals(): GlobalOpts {
+  return program.opts<GlobalOpts>();
+}
+
 program
   .name("pluginx")
   .description("Manage translated Claude Code plugins as Gemini CLI extensions")
-  .version("0.1.0");
+  .version("0.1.0")
+  .option("--non-interactive", "Skip interactive prompts (auto-acknowledge consent)")
+  .option("--config-path <path>", "Custom config file path")
+  .option("--state-path <path>", "Custom state file path");
 
 program
   .command("add")
@@ -25,7 +38,8 @@ program
   .option("--json", "Output structured JSON")
   .action(async (source: string, opts: { consent?: boolean; json?: boolean }) => {
     try {
-      const { report } = await runAdd({ source, ...opts });
+      const g = globals();
+      const { report } = await runAdd({ source, ...opts, ...g });
       if (!opts.json) {
         printReport(report);
       }
@@ -43,7 +57,8 @@ program
   .option("--json", "Output structured JSON")
   .action(async (source: string, opts: { consent?: boolean; json?: boolean }) => {
     try {
-      const { reports } = await runAddMarketplace({ source, ...opts });
+      const g = globals();
+      const { reports } = await runAddMarketplace({ source, ...opts, ...g });
       if (!opts.json) {
         console.log(`Translated ${reports.length} plugins:`);
         for (const report of reports) {
@@ -62,7 +77,8 @@ program
   .option("--json", "Output structured JSON")
   .action(async (opts: { json?: boolean }) => {
     try {
-      await runList(opts);
+      const g = globals();
+      await runList({ ...opts, statePath: g.statePath });
     } catch (err) {
       console.error(`Error: ${(err as Error).message}`);
       process.exitCode = 1;
@@ -75,7 +91,8 @@ program
   .option("--json", "Output structured JSON")
   .action(async (opts: { json?: boolean }) => {
     try {
-      await runStatus(opts);
+      const g = globals();
+      await runStatus({ ...opts, statePath: g.statePath });
     } catch (err) {
       console.error(`Error: ${(err as Error).message}`);
       process.exitCode = 1;
@@ -90,7 +107,8 @@ program
   .option("--json", "Output structured JSON")
   .action(async (names: string[], opts: { consent?: boolean; json?: boolean }) => {
     try {
-      const reports = await runUpdate({ names, ...opts });
+      const g = globals();
+      const reports = await runUpdate({ names, ...opts, ...g });
       if (!opts.json) {
         console.log(`Updated ${reports.length} plugins:`);
         for (const report of reports) {
@@ -110,7 +128,8 @@ program
   .option("--json", "Output structured JSON")
   .action(async (opts: { consent?: boolean; json?: boolean }) => {
     try {
-      const reports = await runUpdateAll(opts);
+      const g = globals();
+      const reports = await runUpdateAll({ ...opts, ...g });
       if (!opts.json) {
         console.log(`Updated ${reports.length} plugins:`);
         for (const report of reports) {
@@ -128,7 +147,11 @@ program
   .description("Manage security consent settings")
   .action(async () => {
     try {
-      const level = await runConsentPrompt();
+      const g = globals();
+      const level = await runConsentPrompt({
+        configPath: g.configPath,
+        nonInteractive: g.nonInteractive,
+      });
       if (level === "declined") {
         console.log(
           "Consent declined. This prompt will appear again next time you run a pluginx command."
@@ -155,7 +178,8 @@ program
   .option("--json", "Output structured JSON")
   .action(async (name: string, opts: { json?: boolean }) => {
     try {
-      await runRemove({ name, ...opts });
+      const g = globals();
+      await runRemove({ name, ...opts, statePath: g.statePath });
     } catch (err) {
       console.error(`Error: ${(err as Error).message}`);
       process.exitCode = 1;
