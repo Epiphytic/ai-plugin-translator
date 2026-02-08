@@ -122,8 +122,8 @@ describe("consent tool", () => {
       if (!result.ok) {
         const parsed = JSON.parse(result.response.content[0].text);
         expect(parsed.status).toBe("consent_required");
-        expect(parsed.message).toContain("ask_user");
         expect(parsed.message).toContain("pluginx_consent");
+        expect(parsed.message).toContain("security notice");
       }
     });
   });

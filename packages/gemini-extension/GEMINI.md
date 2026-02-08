@@ -17,24 +17,15 @@ pluginx translates Claude Code plugins into Gemini CLI extensions and manages th
 
 ## Consent
 
-Some tools require security consent before first use. When a tool returns `"status": "consent_required"`, you MUST obtain consent before retrying.
+Some tools require security consent before first use. When a tool returns `"status": "consent_required"`, you MUST obtain consent before retrying. Do NOT use shell commands.
 
-**IMPORTANT:** You MUST use the `ask_user` tool to present the consent dialog. Do NOT present the options as plain text, numbered lists, or shell commands.
+Present the security notice to the user and ask them to choose one of the following:
 
-Use the `ask_user` tool with these exact parameters:
-- **header:** "Consent"
-- **question:** "pluginx is an EXPERIMENTAL tool that translates Claude Code plugins into Gemini CLI extensions. By using pluginx, you are installing code from third-party plugin developers into your Gemini CLI environment. These plugins may contain arbitrary shell commands in hooks, MCP servers, and command prompts. ONLY install plugins from developers that you trust.\n\nHow would you like to proceed?"
-- **type:** "choice"
-- **multiSelect:** `false`
-- **options:**
-    - Label: "Acknowledged", Description: "Accept the risks for this session only"
-    - Label: "Bypass", Description: "Accept and skip future consent prompts"
-    - Label: "Declined", Description: "Refuse to proceed"
+1. **Acknowledged** — Accept the risks for this session only
+2. **Bypass** — Accept and skip future consent prompts
+3. **Declined** — Refuse to proceed
 
-After the user responds:
-- If "Acknowledged": call `pluginx_consent` with level "acknowledged", then retry the original command.
-- If "Bypass": call `pluginx_consent` with level "bypass", then retry the original command.
-- If "Declined": inform the user that the operation was cancelled. Do NOT retry.
+After the user responds, call `pluginx_consent` with the chosen level, then retry the original command. If declined, do NOT retry.
 
 ## Usage Examples
 

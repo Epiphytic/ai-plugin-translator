@@ -91,7 +91,7 @@ export async function requireConsent(
             text: JSON.stringify({
               status: "consent_required",
               message:
-                "Security consent is required before proceeding. Follow the consent instructions in GEMINI.md to obtain consent using the ask_user tool, then call pluginx_consent and retry.",
+                "Security consent is required before proceeding. Present the security notice to the user and ask them to choose Acknowledged, Bypass, or Declined. Then call pluginx_consent with their choice and retry the original command.",
             }),
           },
         ],
