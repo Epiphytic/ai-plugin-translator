@@ -113,22 +113,17 @@ describe("consent tool", () => {
       }
     });
 
-    it("falls back to ask_user instructions when elicitation not supported", async () => {
+    it("falls back to consent_required JSON when elicitation not supported", async () => {
       mockCheckConsent.mockResolvedValue("required");
       const server = createMockServer(); // rejects with error
 
       const result = await requireConsent(server);
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        const text = result.response.content[0].text;
-        expect(text).toContain("ACTION REQUIRED");
-        expect(text).toContain("ask_user");
-        expect(text).toContain('header:** "Consent"');
-        expect(text).toContain('type:** "choice"');
-        expect(text).toContain("Acknowledged");
-        expect(text).toContain("Bypass");
-        expect(text).toContain("Declined");
-        expect(text).toContain("pluginx_consent");
+        const parsed = JSON.parse(result.response.content[0].text);
+        expect(parsed.status).toBe("consent_required");
+        expect(parsed.message).toContain("ask_user");
+        expect(parsed.message).toContain("pluginx_consent");
       }
     });
   });
