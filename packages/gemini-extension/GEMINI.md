@@ -19,16 +19,15 @@ pluginx translates Claude Code plugins into Gemini CLI extensions and manages th
 
 **IMPORTANT**: Some tools (`pluginx_add`, `pluginx_add_marketplace`, `pluginx_update`, `pluginx_update_all`) require security consent before proceeding.
 
-When a tool returns `{"status": "consent_required", "securityNotice": "..."}`, you MUST:
+When a tool returns `{"status": "consent_required", "securityNotice": "..."}`, you MUST handle consent entirely through the `ask_user` tool. Do NOT use shell commands, `echo`, or any other external commands to display the notice.
 
-1. Present the `securityNotice` text to the user verbatim
-2. Call the built-in `ask_user` tool with the following exact JSON structure:
+Call the built-in `ask_user` tool with the `securityNotice` text embedded directly in the `question` field:
 
 ```json
 {
   "questions": [
     {
-      "question": "How would you like to proceed with security consent?",
+      "question": "<securityNotice text here>\n\nHow would you like to proceed?",
       "header": "Consent",
       "type": "choice",
       "options": [
@@ -50,10 +49,12 @@ When a tool returns `{"status": "consent_required", "securityNotice": "..."}`, y
 }
 ```
 
-3. Based on the user's choice:
-   - **Acknowledged**: Call `pluginx_consent` with `level: "acknowledged"`, then retry the original command
-   - **Bypass**: Call `pluginx_consent` with `level: "bypass"`, then retry the original command
-   - **Declined**: Inform the user that the operation was cancelled. Do NOT retry.
+Replace `<securityNotice text here>` with the actual `securityNotice` value from the tool response.
+
+Based on the user's choice:
+- **Acknowledged**: Call `pluginx_consent` with `level: "acknowledged"`, then retry the original command
+- **Bypass**: Call `pluginx_consent` with `level: "bypass"`, then retry the original command
+- **Declined**: Inform the user that the operation was cancelled. Do NOT retry.
 
 ## Usage Examples
 
