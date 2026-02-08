@@ -18,6 +18,8 @@ export interface AddResult {
 }
 
 export async function runAdd(options: AddOptions): Promise<AddResult> {
+  const log = options.onProgress ?? (() => {});
+
   const consentResult =
     options.consentLevel ?? (await ensureConsent({
       configPath: options.configPath,
@@ -26,6 +28,7 @@ export async function runAdd(options: AddOptions): Promise<AddResult> {
 
   const useConsent = consentResult === "bypass" || options.consent === true;
 
+  log(`Resolving source: ${options.source}`);
   const { name, sourcePath, sourceUrl, sourceType } = await resolveSource(
     options.source,
     options.execFn
@@ -34,6 +37,7 @@ export async function runAdd(options: AddOptions): Promise<AddResult> {
   const translationsDir = options.translationsDir ?? TRANSLATIONS_DIR;
   const outputPath = join(translationsDir, name);
 
+  log(`Translating plugin: ${name}`);
   const report = await translate({
     from: "claude",
     to: "gemini",
@@ -41,6 +45,7 @@ export async function runAdd(options: AddOptions): Promise<AddResult> {
     output: outputPath,
   });
 
+  log(`Linking extension: ${name}`);
   await linkExtension(outputPath, useConsent, options.execFn);
 
   const sourceCommit = await getSourceCommit(
@@ -64,5 +69,6 @@ export async function runAdd(options: AddOptions): Promise<AddResult> {
   const newState = addPlugin(state, plugin);
   await writeState(newState, options.statePath);
 
+  log(`Done: ${name}`);
   return { report, plugin };
 }

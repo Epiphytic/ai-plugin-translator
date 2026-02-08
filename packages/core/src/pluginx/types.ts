@@ -13,6 +13,7 @@ export interface BaseCommandOptions {
   nonInteractive?: boolean;
   translationsDir?: string;
   consentLevel?: "bypass" | "acknowledged";
+  onProgress?: (message: string) => void;
 }
 
 export interface TrackedPlugin {

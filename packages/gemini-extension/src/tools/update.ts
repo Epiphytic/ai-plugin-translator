@@ -1,9 +1,9 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { runUpdate } from "@epiphytic/ai-plugin-translator";
-import { requireConsent } from "./shared.js";
+import { requireConsent, type LogFn } from "./shared.js";
 
-export function registerUpdateTool(server: McpServer): void {
+export function registerUpdateTool(server: McpServer, log: LogFn): void {
   server.tool(
     "pluginx_update",
     "Update named plugins: pull latest source, re-translate, and re-link.",
@@ -25,6 +25,7 @@ export function registerUpdateTool(server: McpServer): void {
           names,
           consent,
           consentLevel: check.consentLevel,
+          onProgress: log,
         });
 
         return {

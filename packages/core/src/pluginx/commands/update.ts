@@ -16,6 +16,8 @@ export interface UpdateOptions extends BaseCommandOptions {
 export async function runUpdate(
   options: UpdateOptions
 ): Promise<TranslationReport[]> {
+  const log = options.onProgress ?? (() => {});
+
   const consentResult =
     options.consentLevel ?? (await ensureConsent({
       configPath: options.configPath,
@@ -34,11 +36,13 @@ export async function runUpdate(
     }
 
     if (plugin.sourceType === "git") {
+      log(`Pulling latest: ${name}`);
       await pullLatest(plugin.sourcePath, options.execFn);
     }
 
     let pluginReports: TranslationReport[];
 
+    log(`Translating: ${name}`);
     if (plugin.type === "marketplace") {
       pluginReports = await translateMarketplace({
         from: "claude",
@@ -58,6 +62,7 @@ export async function runUpdate(
 
     for (const report of pluginReports) {
       const outputPath = join(translationsDir, report.pluginName);
+      log(`Linking extension: ${report.pluginName}`);
       await linkExtension(outputPath, useConsent, options.execFn);
       reports.push(report);
     }

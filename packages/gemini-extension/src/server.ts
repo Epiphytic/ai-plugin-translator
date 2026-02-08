@@ -10,19 +10,38 @@ import { registerUpdateAllTool } from "./tools/update-all.js";
 import { registerRemoveTool } from "./tools/remove.js";
 import { registerConsentTool } from "./tools/consent.js";
 
-const server = new McpServer({
-  name: "pluginx",
-  version: "1.0.0",
-});
+const mcpServer = new McpServer(
+  {
+    name: "pluginx",
+    version: "1.0.0",
+  },
+  {
+    capabilities: { logging: {} },
+  }
+);
 
-registerAddTool(server);
-registerAddMarketplaceTool(server);
-registerListTool(server);
-registerStatusTool(server);
-registerUpdateTool(server);
-registerUpdateAllTool(server);
-registerRemoveTool(server);
-registerConsentTool(server);
+function createLogger() {
+  return (message: string) => {
+    mcpServer.server.sendLoggingMessage({
+      level: "info",
+      logger: "pluginx",
+      data: message,
+    }).catch(() => {
+      // Ignore logging errors - don't break tool execution
+    });
+  };
+}
+
+const log = createLogger();
+
+registerAddTool(mcpServer, log);
+registerAddMarketplaceTool(mcpServer, log);
+registerListTool(mcpServer);
+registerStatusTool(mcpServer);
+registerUpdateTool(mcpServer, log);
+registerUpdateAllTool(mcpServer, log);
+registerRemoveTool(mcpServer);
+registerConsentTool(mcpServer);
 
 const transport = new StdioServerTransport();
-await server.connect(transport);
+await mcpServer.connect(transport);

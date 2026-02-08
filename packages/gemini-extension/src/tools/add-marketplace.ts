@@ -1,9 +1,9 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { runAddMarketplace } from "@epiphytic/ai-plugin-translator";
-import { requireConsent } from "./shared.js";
+import { requireConsent, type LogFn } from "./shared.js";
 
-export function registerAddMarketplaceTool(server: McpServer): void {
+export function registerAddMarketplaceTool(server: McpServer, log: LogFn): void {
   server.tool(
     "pluginx_add_marketplace",
     "Add all plugins from a Claude Code marketplace repository as Gemini CLI extensions.",
@@ -25,6 +25,7 @@ export function registerAddMarketplaceTool(server: McpServer): void {
           source,
           consent,
           consentLevel: check.consentLevel,
+          onProgress: log,
         });
 
         return {

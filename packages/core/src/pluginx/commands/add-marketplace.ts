@@ -20,6 +20,8 @@ export interface AddMarketplaceResult {
 export async function runAddMarketplace(
   options: AddMarketplaceOptions
 ): Promise<AddMarketplaceResult> {
+  const log = options.onProgress ?? (() => {});
+
   const consentResult =
     options.consentLevel ?? (await ensureConsent({
       configPath: options.configPath,
@@ -28,11 +30,13 @@ export async function runAddMarketplace(
 
   const useConsent = consentResult === "bypass" || options.consent === true;
 
+  log(`Resolving source: ${options.source}`);
   const { name: marketplaceName, sourcePath, sourceUrl, sourceType } =
     await resolveSource(options.source, options.execFn);
 
   const translationsDir = options.translationsDir ?? TRANSLATIONS_DIR;
 
+  log(`Translating marketplace: ${marketplaceName}`);
   const reports = await translateMarketplace({
     from: "claude",
     to: "gemini",
@@ -51,6 +55,7 @@ export async function runAddMarketplace(
 
   for (const report of reports) {
     const outputPath = join(translationsDir, report.pluginName);
+    log(`Linking extension: ${report.pluginName}`);
     await linkExtension(outputPath, useConsent, options.execFn);
 
     const plugin: TrackedPlugin = {
@@ -70,5 +75,6 @@ export async function runAddMarketplace(
 
   await writeState(state, options.statePath);
 
+  log(`Done: ${plugins.length} plugins from ${marketplaceName}`);
   return { reports, plugins };
 }
