@@ -20,9 +20,11 @@ const mcpServer = new McpServer(
   }
 );
 
+const server = mcpServer.server;
+
 function createLogger() {
   return (message: string) => {
-    mcpServer.server.sendLoggingMessage({
+    server.sendLoggingMessage({
       level: "info",
       logger: "pluginx",
       data: message,
@@ -34,12 +36,12 @@ function createLogger() {
 
 const log = createLogger();
 
-registerAddTool(mcpServer, log);
-registerAddMarketplaceTool(mcpServer, log);
+registerAddTool(mcpServer, server, log);
+registerAddMarketplaceTool(mcpServer, server, log);
 registerListTool(mcpServer);
 registerStatusTool(mcpServer);
-registerUpdateTool(mcpServer, log);
-registerUpdateAllTool(mcpServer, log);
+registerUpdateTool(mcpServer, server, log);
+registerUpdateAllTool(mcpServer, server, log);
 registerRemoveTool(mcpServer);
 registerConsentTool(mcpServer);
 

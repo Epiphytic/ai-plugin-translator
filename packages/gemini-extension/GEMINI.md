@@ -15,46 +15,9 @@ pluginx translates Claude Code plugins into Gemini CLI extensions and manages th
 | `pluginx_remove` | Remove a plugin from tracking |
 | `pluginx_consent` | Set the user's security consent level |
 
-## Consent Flow Protocol
+## Consent
 
-**IMPORTANT**: Some tools (`pluginx_add`, `pluginx_add_marketplace`, `pluginx_update`, `pluginx_update_all`) require security consent before proceeding.
-
-When a tool returns `{"status": "consent_required", "securityNotice": "..."}`, you MUST handle consent entirely through the `ask_user` tool. Do NOT use shell commands, `echo`, or any other external commands to display the notice.
-
-Call the built-in `ask_user` tool with the `securityNotice` text embedded directly in the `question` field:
-
-```json
-{
-  "questions": [
-    {
-      "question": "<securityNotice text here>\n\nHow would you like to proceed?",
-      "header": "Consent",
-      "type": "choice",
-      "options": [
-        {
-          "label": "Acknowledged",
-          "description": "Accept the risks for this session only"
-        },
-        {
-          "label": "Bypass",
-          "description": "Accept and skip future consent prompts"
-        },
-        {
-          "label": "Declined",
-          "description": "Refuse to proceed"
-        }
-      ]
-    }
-  ]
-}
-```
-
-Replace `<securityNotice text here>` with the actual `securityNotice` value from the tool response.
-
-Based on the user's choice:
-- **Acknowledged**: Call `pluginx_consent` with `level: "acknowledged"`, then retry the original command
-- **Bypass**: Call `pluginx_consent` with `level: "bypass"`, then retry the original command
-- **Declined**: Inform the user that the operation was cancelled. Do NOT retry.
+Some tools require security consent before first use. The consent dialog is handled automatically by the extension. If a tool returns `{"status": "consent_required", ...}`, call `pluginx_consent` with level `"acknowledged"` or `"bypass"` after confirming with the user, then retry the original command. If the user declines, do not retry.
 
 ## Usage Examples
 

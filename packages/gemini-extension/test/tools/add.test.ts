@@ -16,15 +16,28 @@ const mockRunAdd = vi.mocked(runAdd);
 // This avoids needing to spin up a full MCP server
 import { requireConsent } from "../../src/tools/shared.js";
 
+// Mock Server with elicitInput
+function createMockServer(elicitResult?: {
+  action: string;
+  content?: Record<string, unknown>;
+}) {
+  return {
+    elicitInput: elicitResult
+      ? vi.fn().mockResolvedValue(elicitResult)
+      : vi.fn().mockRejectedValue(new Error("Client does not support form elicitation.")),
+  } as any;
+}
+
 describe("pluginx_add tool", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("returns consent_required when consent not given", async () => {
+  it("returns consent_required when consent not given and elicitation unsupported", async () => {
     mockCheckConsent.mockResolvedValue("required");
+    const server = createMockServer(); // rejects
 
-    const check = await requireConsent();
+    const check = await requireConsent(server);
     expect(check.ok).toBe(false);
     if (!check.ok) {
       const parsed = JSON.parse(check.response.content[0].text);
@@ -36,8 +49,9 @@ describe("pluginx_add tool", () => {
 
   it("calls runAdd with consentLevel when consent is acknowledged", async () => {
     mockCheckConsent.mockResolvedValue("acknowledged");
+    const server = createMockServer();
 
-    const check = await requireConsent();
+    const check = await requireConsent(server);
     expect(check.ok).toBe(true);
 
     if (check.ok) {
@@ -74,8 +88,9 @@ describe("pluginx_add tool", () => {
 
   it("calls runAdd with bypass consentLevel", async () => {
     mockCheckConsent.mockResolvedValue("bypass");
+    const server = createMockServer();
 
-    const check = await requireConsent();
+    const check = await requireConsent(server);
     expect(check.ok).toBe(true);
 
     if (check.ok) {

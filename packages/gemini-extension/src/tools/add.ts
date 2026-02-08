@@ -1,10 +1,15 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { runAdd } from "@epiphytic/ai-plugin-translator";
 import { requireConsent, type LogFn } from "./shared.js";
 
-export function registerAddTool(server: McpServer, log: LogFn): void {
-  server.tool(
+export function registerAddTool(
+  mcpServer: McpServer,
+  server: Server,
+  log: LogFn
+): void {
+  mcpServer.tool(
     "pluginx_add",
     "Add a Claude Code plugin as a Gemini CLI extension. Translates the plugin and links it.",
     {
@@ -17,7 +22,7 @@ export function registerAddTool(server: McpServer, log: LogFn): void {
         .describe("Pass --consent to gemini extensions link"),
     },
     async ({ source, consent }) => {
-      const check = await requireConsent();
+      const check = await requireConsent(server);
       if (!check.ok) return check.response;
 
       try {

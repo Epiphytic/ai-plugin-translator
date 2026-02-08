@@ -1,10 +1,15 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { runUpdate } from "@epiphytic/ai-plugin-translator";
 import { requireConsent, type LogFn } from "./shared.js";
 
-export function registerUpdateTool(server: McpServer, log: LogFn): void {
-  server.tool(
+export function registerUpdateTool(
+  mcpServer: McpServer,
+  server: Server,
+  log: LogFn
+): void {
+  mcpServer.tool(
     "pluginx_update",
     "Update named plugins: pull latest source, re-translate, and re-link.",
     {
@@ -17,7 +22,7 @@ export function registerUpdateTool(server: McpServer, log: LogFn): void {
         .describe("Pass --consent to gemini extensions link"),
     },
     async ({ names, consent }) => {
-      const check = await requireConsent();
+      const check = await requireConsent(server);
       if (!check.ok) return check.response;
 
       try {
