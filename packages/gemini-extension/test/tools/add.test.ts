@@ -33,15 +33,16 @@ describe("pluginx_add tool", () => {
     vi.clearAllMocks();
   });
 
-  it("returns consent_required when consent not given and elicitation unsupported", async () => {
+  it("returns ask_user instructions when consent not given and elicitation unsupported", async () => {
     mockCheckConsent.mockResolvedValue("required");
     const server = createMockServer(); // rejects
 
     const check = await requireConsent(server);
     expect(check.ok).toBe(false);
     if (!check.ok) {
-      const parsed = JSON.parse(check.response.content[0].text);
-      expect(parsed.status).toBe("consent_required");
+      const text = check.response.content[0].text;
+      expect(text).toContain("ask_user");
+      expect(text).toContain("Consent");
     }
 
     expect(mockRunAdd).not.toHaveBeenCalled();

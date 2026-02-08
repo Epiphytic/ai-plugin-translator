@@ -79,17 +79,35 @@ export async function requireConsent(
       },
     };
   } catch {
-    // Elicitation not supported by client — fall back to model-mediated flow
+    // Elicitation not supported by client — fall back to model-mediated flow.
+    // Return structured ask_user instructions matching the conductor pattern
+    // so the model calls the native ask_user tool.
     return {
       ok: false,
       response: {
         content: [
           {
             type: "text",
-            text: JSON.stringify({
-              status: "consent_required",
-              securityNotice: SECURITY_NOTICE,
-            }),
+            text: [
+              "ACTION REQUIRED: You MUST present the security notice and obtain consent before proceeding.",
+              "",
+              `Security notice: ${SECURITY_NOTICE}`,
+              "",
+              "Present this notice to the user, then ask for their consent using the `ask_user` tool:",
+              '- **header:** "Consent"',
+              '- **question:** "' + SECURITY_NOTICE.replace(/\n/g, " ") + '\\n\\nHow would you like to proceed?"',
+              '- **type:** "choice"',
+              "- **multiSelect:** `false`",
+              "- **options:**",
+              '    - Label: "Acknowledged", Description: "Accept the risks for this session only"',
+              '    - Label: "Bypass", Description: "Accept and skip future consent prompts"',
+              '    - Label: "Declined", Description: "Refuse to proceed"',
+              "",
+              "After the user responds:",
+              '- If "Acknowledged": call `pluginx_consent` with level "acknowledged", then retry the original command.',
+              '- If "Bypass": call `pluginx_consent` with level "bypass", then retry the original command.',
+              '- If "Declined": inform the user that the operation was cancelled. Do NOT retry.',
+            ].join("\n"),
           },
         ],
       },

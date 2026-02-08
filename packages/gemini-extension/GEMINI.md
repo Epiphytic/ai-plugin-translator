@@ -17,7 +17,7 @@ pluginx translates Claude Code plugins into Gemini CLI extensions and manages th
 
 ## Consent
 
-Some tools require security consent before first use. The consent dialog is handled automatically by the extension. If a tool returns `{"status": "consent_required", ...}`, call `pluginx_consent` with level `"acknowledged"` or `"bypass"` after confirming with the user, then retry the original command. If the user declines, do not retry.
+Some tools require security consent before first use. The consent dialog is normally handled automatically by the extension. If it cannot be handled automatically, the tool will return instructions telling you to use the `ask_user` tool. You MUST follow those instructions exactly — use the `ask_user` tool with the specified header, question, type, and options. Do NOT use shell commands or plain text to present the consent dialog.
 
 ## Usage Examples
 
