@@ -1,0 +1,2 @@
+prompt = """Use the pluginx_add_marketplace tool to add all plugins from the marketplace: {{args}}
+Display the results to the user."""

@@ -78,7 +78,29 @@ program
   .action(async (opts: { json?: boolean }) => {
     try {
       const g = globals();
-      await runList({ ...opts, statePath: g.statePath });
+      const plugins = await runList({ statePath: g.statePath });
+
+      if (plugins.length === 0) {
+        console.log("No plugins tracked.");
+        console.log(
+          "Use `pluginx add <source>` or `pluginx add-marketplace <source>` to get started."
+        );
+        return;
+      }
+
+      if (opts.json) {
+        console.log(JSON.stringify(plugins, null, 2));
+        return;
+      }
+
+      console.log(`Tracked plugins (${plugins.length}):\n`);
+      for (const p of plugins) {
+        console.log(`  ${p.name}`);
+        console.log(`    Source: ${p.sourceUrl ?? p.sourcePath}`);
+        console.log(`    Type: ${p.type}`);
+        console.log(`    Last translated: ${p.lastTranslated}`);
+        console.log();
+      }
     } catch (err) {
       console.error(`Error: ${(err as Error).message}`);
       process.exitCode = 1;
@@ -92,7 +114,29 @@ program
   .action(async (opts: { json?: boolean }) => {
     try {
       const g = globals();
-      await runStatus({ ...opts, statePath: g.statePath });
+      const statuses = await runStatus({ statePath: g.statePath });
+
+      if (statuses.length === 0) {
+        console.log("No plugins tracked.");
+        return;
+      }
+
+      if (opts.json) {
+        console.log(JSON.stringify(statuses, null, 2));
+      } else {
+        console.log(`Plugin status (${statuses.length}):\n`);
+        for (const s of statuses) {
+          const statusLabel =
+            s.upToDate === true
+              ? "up to date"
+              : s.upToDate === false
+                ? "outdated"
+                : "unknown";
+          console.log(`  ${s.name}: ${statusLabel}`);
+          console.log(`    Last translated: ${s.lastTranslated}`);
+          console.log();
+        }
+      }
     } catch (err) {
       console.error(`Error: ${(err as Error).message}`);
       process.exitCode = 1;
@@ -179,7 +223,22 @@ program
   .action(async (name: string, opts: { json?: boolean }) => {
     try {
       const g = globals();
-      await runRemove({ name, ...opts, statePath: g.statePath });
+      const removed = await runRemove({ name, statePath: g.statePath });
+
+      if (!removed) {
+        console.error(`Plugin not found: ${name}`);
+        process.exitCode = 1;
+        return;
+      }
+
+      if (opts.json) {
+        console.log(JSON.stringify({ removed: name }));
+      } else {
+        console.log(`Removed "${name}" from tracking.`);
+        console.log(
+          `To fully uninstall, run: gemini extensions uninstall ${name}`
+        );
+      }
     } catch (err) {
       console.error(`Error: ${(err as Error).message}`);
       process.exitCode = 1;

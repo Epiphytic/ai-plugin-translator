@@ -1,0 +1,2 @@
+prompt = """Use the pluginx_list tool to list all tracked plugins.
+Display the results to the user in a readable format."""

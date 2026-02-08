@@ -11,7 +11,6 @@ describe("pluginx/commands/status", () => {
   beforeEach(async () => {
     tmpDir = join(tmpdir(), `pluginx-status-test-${Date.now()}`);
     await mkdir(tmpDir, { recursive: true });
-    vi.spyOn(console, "log").mockImplementation(() => {});
   });
 
   afterEach(async () => {
@@ -99,10 +98,9 @@ describe("pluginx/commands/status", () => {
     expect(statuses[0].upToDate).toBe("unknown");
   });
 
-  it("prints empty message when no plugins", async () => {
+  it("returns empty array when no plugins", async () => {
     const statePath = join(tmpDir, "state.json");
     const statuses = await runStatus({ statePath });
     expect(statuses).toEqual([]);
-    expect(console.log).toHaveBeenCalledWith("No plugins tracked.");
   });
 });

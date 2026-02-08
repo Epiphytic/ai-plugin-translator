@@ -15,7 +15,7 @@ import { join } from "path";
 import { tmpdir } from "os";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 
 import { runAdd } from "../../src/pluginx/commands/add.js";
 import { runList } from "../../src/pluginx/commands/list.js";
@@ -89,12 +89,9 @@ describe("pluginx lifecycle (programmatic API)", () => {
     expect(linkCalls[0].args).toContain(outputPath);
 
     // Step 2: List plugins
-    const consoleSpy = vi.spyOn(console, "log");
-    await runList({ statePath });
-    expect(consoleSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Tracked plugins (1)")
-    );
-    consoleSpy.mockRestore();
+    const plugins = await runList({ statePath });
+    expect(plugins).toHaveLength(1);
+    expect(plugins[0].name).toBe(FULL_DIR_NAME);
 
     // Step 3: Check status (uses tracked name from state)
     const statuses = await runStatus({ statePath });
@@ -121,10 +118,8 @@ describe("pluginx lifecycle (programmatic API)", () => {
     expect(removed).toBe(true);
 
     // Step 6: Verify list is empty
-    const consoleSpy2 = vi.spyOn(console, "log");
-    await runList({ statePath });
-    expect(consoleSpy2).toHaveBeenCalledWith("No plugins tracked.");
-    consoleSpy2.mockRestore();
+    const emptyPlugins = await runList({ statePath });
+    expect(emptyPlugins).toHaveLength(0);
   });
 
   it("add with --consent passes --consent to gemini extensions link", async () => {

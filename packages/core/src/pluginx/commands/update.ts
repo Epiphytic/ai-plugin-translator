@@ -16,12 +16,13 @@ export interface UpdateOptions extends BaseCommandOptions {
 export async function runUpdate(
   options: UpdateOptions
 ): Promise<TranslationReport[]> {
-  const consent = await ensureConsent({
-    configPath: options.configPath,
-    nonInteractive: options.nonInteractive,
-  });
+  const consentResult =
+    options.consentLevel ?? (await ensureConsent({
+      configPath: options.configPath,
+      nonInteractive: options.nonInteractive,
+    }));
 
-  const useConsent = consent === "bypass" || options.consent === true;
+  const useConsent = consentResult === "bypass" || options.consent === true;
   const translationsDir = options.translationsDir ?? TRANSLATIONS_DIR;
   let state = await readState(options.statePath);
   const reports: TranslationReport[] = [];
@@ -29,7 +30,6 @@ export async function runUpdate(
   for (const name of options.names) {
     const plugin = findPlugin(state, name);
     if (!plugin) {
-      console.error(`Plugin not found: ${name}`);
       continue;
     }
 

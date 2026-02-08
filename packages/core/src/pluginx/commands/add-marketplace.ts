@@ -20,12 +20,13 @@ export interface AddMarketplaceResult {
 export async function runAddMarketplace(
   options: AddMarketplaceOptions
 ): Promise<AddMarketplaceResult> {
-  const consent = await ensureConsent({
-    configPath: options.configPath,
-    nonInteractive: options.nonInteractive,
-  });
+  const consentResult =
+    options.consentLevel ?? (await ensureConsent({
+      configPath: options.configPath,
+      nonInteractive: options.nonInteractive,
+    }));
 
-  const useConsent = consent === "bypass" || options.consent === true;
+  const useConsent = consentResult === "bypass" || options.consent === true;
 
   const { name: marketplaceName, sourcePath, sourceUrl, sourceType } =
     await resolveSource(options.source, options.execFn);

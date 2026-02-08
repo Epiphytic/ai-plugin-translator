@@ -1,0 +1,2 @@
+prompt = """Use the pluginx_update tool to update the following plugins: {{args}}
+Display the results to the user."""

@@ -1,5 +1,0 @@
-prompt = """You are the pluginx extension manager. Run:
-!{npx -y -p @epiphytic/ai-plugin-translator pluginx add-marketplace {{args}}}
-
-Display the output to the user.
-"""

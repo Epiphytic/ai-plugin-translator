@@ -12,6 +12,7 @@ export interface BaseCommandOptions {
   execFn?: ExecFn;
   nonInteractive?: boolean;
   translationsDir?: string;
+  consentLevel?: "bypass" | "acknowledged";
 }
 
 export interface TrackedPlugin {

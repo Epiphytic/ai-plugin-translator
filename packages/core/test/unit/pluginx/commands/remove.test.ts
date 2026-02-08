@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { writeFile, mkdir, rm, readFile } from "fs/promises";
 import { join } from "path";
 import { tmpdir } from "os";
@@ -11,13 +11,10 @@ describe("pluginx/commands/remove", () => {
   beforeEach(async () => {
     tmpDir = join(tmpdir(), `pluginx-remove-test-${Date.now()}`);
     await mkdir(tmpDir, { recursive: true });
-    vi.spyOn(console, "log").mockImplementation(() => {});
-    vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(async () => {
     await rm(tmpDir, { recursive: true, force: true });
-    vi.restoreAllMocks();
   });
 
   it("removes a tracked plugin", async () => {
@@ -49,28 +46,5 @@ describe("pluginx/commands/remove", () => {
 
     const result = await runRemove({ name: "missing", statePath });
     expect(result).toBe(false);
-    expect(console.error).toHaveBeenCalledWith("Plugin not found: missing");
-  });
-
-  it("advises user to run gemini extensions uninstall", async () => {
-    const statePath = join(tmpDir, "state.json");
-    const state: PluginxState = {
-      plugins: [
-        {
-          name: "test",
-          sourceType: "local",
-          sourcePath: "/local",
-          outputPath: "/out",
-          type: "single",
-          lastTranslated: "2026-01-01T00:00:00.000Z",
-        },
-      ],
-    };
-    await writeFile(statePath, JSON.stringify(state));
-
-    await runRemove({ name: "test", statePath });
-    expect(console.log).toHaveBeenCalledWith(
-      expect.stringContaining("gemini extensions uninstall")
-    );
   });
 });

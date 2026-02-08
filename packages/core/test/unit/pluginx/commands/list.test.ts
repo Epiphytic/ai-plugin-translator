@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { writeFile, mkdir, rm } from "fs/promises";
 import { join } from "path";
 import { tmpdir } from "os";
@@ -11,21 +11,19 @@ describe("pluginx/commands/list", () => {
   beforeEach(async () => {
     tmpDir = join(tmpdir(), `pluginx-list-test-${Date.now()}`);
     await mkdir(tmpDir, { recursive: true });
-    vi.spyOn(console, "log").mockImplementation(() => {});
   });
 
   afterEach(async () => {
     await rm(tmpDir, { recursive: true, force: true });
-    vi.restoreAllMocks();
   });
 
-  it("prints message when no plugins tracked", async () => {
+  it("returns empty array when no plugins tracked", async () => {
     const statePath = join(tmpDir, "state.json");
-    await runList({ statePath });
-    expect(console.log).toHaveBeenCalledWith("No plugins tracked.");
+    const result = await runList({ statePath });
+    expect(result).toEqual([]);
   });
 
-  it("prints tracked plugins", async () => {
+  it("returns tracked plugins", async () => {
     const statePath = join(tmpDir, "state.json");
     const state: PluginxState = {
       plugins: [
@@ -41,12 +39,13 @@ describe("pluginx/commands/list", () => {
       ],
     };
     await writeFile(statePath, JSON.stringify(state));
-    await runList({ statePath });
-    expect(console.log).toHaveBeenCalledWith("Tracked plugins (1):\n");
-    expect(console.log).toHaveBeenCalledWith("  test-plugin");
+    const result = await runList({ statePath });
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe("test-plugin");
+    expect(result[0].sourceUrl).toBe("https://github.com/test/plugin.git");
   });
 
-  it("outputs JSON when --json flag is set", async () => {
+  it("returns all plugin data", async () => {
     const statePath = join(tmpDir, "state.json");
     const state: PluginxState = {
       plugins: [
@@ -61,9 +60,9 @@ describe("pluginx/commands/list", () => {
       ],
     };
     await writeFile(statePath, JSON.stringify(state));
-    await runList({ statePath, json: true });
-    expect(console.log).toHaveBeenCalledWith(
-      expect.stringContaining("json-plugin")
-    );
+    const result = await runList({ statePath });
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe("json-plugin");
+    expect(result[0].sourceType).toBe("local");
   });
 });

@@ -1,0 +1,2 @@
+prompt = """Use the pluginx_status tool to check if tracked plugins are up to date.
+Display the results to the user in a readable format."""

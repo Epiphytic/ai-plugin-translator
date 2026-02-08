@@ -11,7 +11,6 @@ export async function runUpdateAll(
   const state = await readState(options.statePath);
 
   if (state.plugins.length === 0) {
-    console.log("No plugins tracked. Nothing to update.");
     return [];
   }
 
@@ -21,6 +20,7 @@ export async function runUpdateAll(
     names,
     consent: options.consent,
     json: options.json,
+    consentLevel: options.consentLevel,
     configPath: options.configPath,
     statePath: options.statePath,
     execFn: options.execFn,

@@ -18,12 +18,13 @@ export interface AddResult {
 }
 
 export async function runAdd(options: AddOptions): Promise<AddResult> {
-  const consent = await ensureConsent({
-    configPath: options.configPath,
-    nonInteractive: options.nonInteractive,
-  });
+  const consentResult =
+    options.consentLevel ?? (await ensureConsent({
+      configPath: options.configPath,
+      nonInteractive: options.nonInteractive,
+    }));
 
-  const useConsent = consent === "bypass" || options.consent === true;
+  const useConsent = consentResult === "bypass" || options.consent === true;
 
   const { name, sourcePath, sourceUrl, sourceType } = await resolveSource(
     options.source,

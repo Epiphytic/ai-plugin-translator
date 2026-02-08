@@ -1,7 +1,7 @@
 import { select, intro, outro, note, isCancel, cancel } from "@clack/prompts";
 import { checkConsent, writeConfig, type ConsentResult } from "./config.js";
 
-const SECURITY_NOTICE = `pluginx is an EXPERIMENTAL tool that translates Claude Code plugins
+export const SECURITY_NOTICE = `pluginx is an EXPERIMENTAL tool that translates Claude Code plugins
 into Gemini CLI extensions.
 
 By using pluginx, you are installing code from third-party plugin

@@ -1,0 +1,2 @@
+prompt = """Use the pluginx_update_all tool to update all tracked plugins.
+Display the results to the user."""

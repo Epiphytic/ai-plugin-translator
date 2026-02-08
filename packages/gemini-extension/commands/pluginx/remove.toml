@@ -1,0 +1,2 @@
+prompt = """Use the pluginx_remove tool to remove the plugin: {{args}}
+Display the results to the user."""
