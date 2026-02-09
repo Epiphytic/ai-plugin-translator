@@ -13,7 +13,9 @@ export async function runUpdateAll(
     return { reports: [], failures: [] };
   }
 
+  const log = options.onProgress ?? (() => {});
   const names = state.plugins.map((p) => p.name);
+  log(`Updating ${names.length} plugin${names.length === 1 ? "" : "s"}: ${names.join(", ")}`);
 
   return runUpdate({
     names,

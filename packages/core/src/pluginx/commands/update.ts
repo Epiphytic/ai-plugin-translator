@@ -40,7 +40,10 @@ export async function runUpdate(
   const reports: TranslationReport[] = [];
   const failures: UpdateFailure[] = [];
 
-  for (const name of options.names) {
+  const total = options.names.length;
+  for (let i = 0; i < total; i++) {
+    const name = options.names[i];
+    const prefix = total > 1 ? `[${i + 1}/${total}] ` : "";
     const plugin = findPlugin(state, name);
     if (!plugin) {
       continue;
@@ -48,13 +51,13 @@ export async function runUpdate(
 
     try {
       if (plugin.sourceType === "git") {
-        log(`Pulling latest for ${name}...`);
+        log(`${prefix}Pulling latest for ${name}...`);
         await pullLatest(plugin.sourcePath, options.execFn);
       }
 
       let pluginReports: TranslationReport[];
 
-      log(`Converting ${name}...`);
+      log(`${prefix}Converting ${name}...`);
       if (plugin.type === "marketplace") {
         pluginReports = await translateMarketplace({
           from: "claude",
@@ -74,7 +77,7 @@ export async function runUpdate(
 
       for (const report of pluginReports) {
         const outputPath = join(translationsDir, report.pluginName);
-        log(`Linking ${report.pluginName}...`);
+        log(`${prefix}Linking ${report.pluginName}...`);
         await linkExtension(outputPath, useConsent, options.execFn);
         reports.push(report);
       }
@@ -91,10 +94,10 @@ export async function runUpdate(
         sourceCommit: sourceCommit ?? plugin.sourceCommit,
       });
 
-      log(`Updated ${name}`);
+      log(`${prefix}Updated ${name}`);
     } catch (err) {
       const msg = (err as Error).message ?? String(err);
-      log(`Failed to update ${name}: ${msg}`);
+      log(`${prefix}Failed to update ${name}: ${msg}`);
       failures.push({ name, error: msg });
     }
   }
