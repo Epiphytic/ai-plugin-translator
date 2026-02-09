@@ -22,6 +22,8 @@ export function registerUpdateTool(
         .describe("Pass --consent to gemini extensions link"),
     },
     async ({ names, consent }) => {
+      log(`Starting update for ${names.join(", ")}...`);
+
       const check = await requireConsent(server);
       if (!check.ok) return check.response;
 

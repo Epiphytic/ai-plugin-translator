@@ -22,6 +22,8 @@ export function registerAddMarketplaceTool(
         .describe("Pass --consent to gemini extensions link"),
     },
     async ({ source, consent }) => {
+      log(`Starting add-marketplace for ${source}...`);
+
       const check = await requireConsent(server);
       if (!check.ok) return check.response;
 

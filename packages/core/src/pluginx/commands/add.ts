@@ -31,7 +31,8 @@ export async function runAdd(options: AddOptions): Promise<AddResult> {
   log(`Fetching ${options.source}...`);
   const { name, sourcePath, sourceUrl, sourceType } = await resolveSource(
     options.source,
-    options.execFn
+    options.execFn,
+    (gitLine) => log(`  ${gitLine}`),
   );
 
   const translationsDir = options.translationsDir ?? TRANSLATIONS_DIR;

@@ -38,7 +38,11 @@ export async function runAddMarketplace(
 
   log(`Fetching ${options.source}...`);
   const { name: marketplaceName, sourcePath, sourceUrl, sourceType } =
-    await resolveSource(options.source, options.execFn);
+    await resolveSource(
+      options.source,
+      options.execFn,
+      (gitLine) => log(`  ${gitLine}`),
+    );
 
   const translationsDir = options.translationsDir ?? TRANSLATIONS_DIR;
 

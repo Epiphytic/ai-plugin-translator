@@ -19,8 +19,13 @@ export function registerUpdateAllTool(
         .describe("Pass --consent to gemini extensions link"),
     },
     async ({ consent }) => {
+      log("Starting update-all...");
+      log("Checking consent...");
+
       const check = await requireConsent(server);
       if (!check.ok) return check.response;
+
+      log("Loading tracked plugins...");
 
       try {
         const { reports, failures } = await runUpdateAll({

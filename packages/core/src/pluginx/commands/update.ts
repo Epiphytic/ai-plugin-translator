@@ -52,7 +52,11 @@ export async function runUpdate(
     try {
       if (plugin.sourceType === "git") {
         log(`${prefix}Pulling latest for ${name}...`);
-        await pullLatest(plugin.sourcePath, options.execFn);
+        await pullLatest(
+          plugin.sourcePath,
+          options.execFn,
+          (gitLine) => log(`${prefix}  ${gitLine}`),
+        );
       }
 
       let pluginReports: TranslationReport[];

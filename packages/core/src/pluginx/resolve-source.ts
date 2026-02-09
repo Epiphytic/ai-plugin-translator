@@ -1,6 +1,6 @@
 import { basename } from "path";
 import { stat } from "fs/promises";
-import { clonePersistent, getCurrentCommit } from "./git-ops.js";
+import { clonePersistent, getCurrentCommit, type ProgressFn } from "./git-ops.js";
 import { resolveGitUrl } from "../utils/git.js";
 import type { ExecFn } from "./exec-utils.js";
 
@@ -13,7 +13,8 @@ export interface ResolvedSource {
 
 export async function resolveSource(
   source: string,
-  execFn?: ExecFn
+  execFn?: ExecFn,
+  onProgress?: ProgressFn,
 ): Promise<ResolvedSource> {
   const isLocal = await isLocalPath(source);
   const name = deriveName(source);
@@ -26,7 +27,7 @@ export async function resolveSource(
     };
   }
 
-  const sourcePath = await clonePersistent(source, name, execFn);
+  const sourcePath = await clonePersistent(source, name, execFn, onProgress);
   return {
     name,
     sourcePath,
