@@ -26,5 +26,6 @@ export async function runUpdateAll(
     execFn: options.execFn,
     nonInteractive: options.nonInteractive,
     translationsDir: options.translationsDir,
+    onProgress: options.onProgress,
   });
 }
