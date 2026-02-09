@@ -26,7 +26,7 @@ export function registerUpdateTool(
       if (!check.ok) return check.response;
 
       try {
-        const reports = await runUpdate({
+        const { reports, failures } = await runUpdate({
           names,
           consent,
           consentLevel: check.consentLevel,
@@ -38,7 +38,7 @@ export function registerUpdateTool(
             {
               type: "text",
               text: JSON.stringify({
-                status: "success",
+                status: failures.length > 0 ? "partial" : "success",
                 updated: reports.length,
                 reports: reports.map((r) => ({
                   pluginName: r.pluginName,
@@ -46,6 +46,7 @@ export function registerUpdateTool(
                   skipped: r.skipped.length,
                   warnings: r.warnings,
                 })),
+                failures,
               }),
             },
           ],

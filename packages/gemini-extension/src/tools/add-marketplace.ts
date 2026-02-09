@@ -26,7 +26,7 @@ export function registerAddMarketplaceTool(
       if (!check.ok) return check.response;
 
       try {
-        const { reports, plugins } = await runAddMarketplace({
+        const { reports, plugins, failures } = await runAddMarketplace({
           source,
           consent,
           consentLevel: check.consentLevel,
@@ -38,7 +38,7 @@ export function registerAddMarketplaceTool(
             {
               type: "text",
               text: JSON.stringify({
-                status: "success",
+                status: failures.length > 0 ? "partial" : "success",
                 pluginsAdded: plugins.length,
                 plugins: plugins.map((p) => ({
                   name: p.name,
@@ -51,6 +51,7 @@ export function registerAddMarketplaceTool(
                   skipped: r.skipped.length,
                   warnings: r.warnings,
                 })),
+                failures,
               }),
             },
           ],

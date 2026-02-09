@@ -58,13 +58,17 @@ program
   .action(async (source: string, opts: { consent?: boolean; json?: boolean }) => {
     try {
       const g = globals();
-      const { reports } = await runAddMarketplace({ source, ...opts, ...g });
+      const { reports, failures } = await runAddMarketplace({ source, ...opts, ...g });
       if (!opts.json) {
         console.log(`Translated ${reports.length} plugins:`);
         for (const report of reports) {
           printReport(report);
         }
+        for (const f of failures) {
+          console.error(`Failed: ${f.name}: ${f.error}`);
+        }
       }
+      if (failures.length > 0) process.exitCode = 2;
     } catch (err) {
       console.error(`Error: ${(err as Error).message}`);
       process.exitCode = 1;
@@ -152,13 +156,17 @@ program
   .action(async (names: string[], opts: { consent?: boolean; json?: boolean }) => {
     try {
       const g = globals();
-      const reports = await runUpdate({ names, ...opts, ...g });
+      const { reports, failures } = await runUpdate({ names, ...opts, ...g });
       if (!opts.json) {
         console.log(`Updated ${reports.length} plugins:`);
         for (const report of reports) {
           printReport(report);
         }
+        for (const f of failures) {
+          console.error(`Failed: ${f.name}: ${f.error}`);
+        }
       }
+      if (failures.length > 0) process.exitCode = 2;
     } catch (err) {
       console.error(`Error: ${(err as Error).message}`);
       process.exitCode = 1;
@@ -173,13 +181,17 @@ program
   .action(async (opts: { consent?: boolean; json?: boolean }) => {
     try {
       const g = globals();
-      const reports = await runUpdateAll({ ...opts, ...g });
+      const { reports, failures } = await runUpdateAll({ ...opts, ...g });
       if (!opts.json) {
         console.log(`Updated ${reports.length} plugins:`);
         for (const report of reports) {
           printReport(report);
         }
+        for (const f of failures) {
+          console.error(`Failed: ${f.name}: ${f.error}`);
+        }
       }
+      if (failures.length > 0) process.exitCode = 2;
     } catch (err) {
       console.error(`Error: ${(err as Error).message}`);
       process.exitCode = 1;

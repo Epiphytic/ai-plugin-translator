@@ -9,13 +9,23 @@ import { ensureConsent } from "../consent.js";
 import type { BaseCommandOptions } from "../types.js";
 import type { TranslationReport } from "../../adapters/types.js";
 
+export interface UpdateFailure {
+  name: string;
+  error: string;
+}
+
+export interface UpdateResult {
+  reports: TranslationReport[];
+  failures: UpdateFailure[];
+}
+
 export interface UpdateOptions extends BaseCommandOptions {
   names: string[];
 }
 
 export async function runUpdate(
   options: UpdateOptions
-): Promise<TranslationReport[]> {
+): Promise<UpdateResult> {
   const log = options.onProgress ?? (() => {});
 
   const consentResult =
@@ -28,6 +38,7 @@ export async function runUpdate(
   const translationsDir = options.translationsDir ?? TRANSLATIONS_DIR;
   let state = await readState(options.statePath);
   const reports: TranslationReport[] = [];
+  const failures: UpdateFailure[] = [];
 
   for (const name of options.names) {
     const plugin = findPlugin(state, name);
@@ -35,51 +46,59 @@ export async function runUpdate(
       continue;
     }
 
-    if (plugin.sourceType === "git") {
-      log(`Pulling latest: ${name}`);
-      await pullLatest(plugin.sourcePath, options.execFn);
-    }
+    try {
+      if (plugin.sourceType === "git") {
+        log(`Pulling latest for ${name}...`);
+        await pullLatest(plugin.sourcePath, options.execFn);
+      }
 
-    let pluginReports: TranslationReport[];
+      let pluginReports: TranslationReport[];
 
-    log(`Translating: ${name}`);
-    if (plugin.type === "marketplace") {
-      pluginReports = await translateMarketplace({
-        from: "claude",
-        to: "gemini",
-        source: plugin.sourcePath,
-        outputDir: translationsDir,
+      log(`Converting ${name}...`);
+      if (plugin.type === "marketplace") {
+        pluginReports = await translateMarketplace({
+          from: "claude",
+          to: "gemini",
+          source: plugin.sourcePath,
+          outputDir: translationsDir,
+        });
+      } else {
+        const report = await translate({
+          from: "claude",
+          to: "gemini",
+          source: plugin.sourcePath,
+          output: plugin.outputPath,
+        });
+        pluginReports = [report];
+      }
+
+      for (const report of pluginReports) {
+        const outputPath = join(translationsDir, report.pluginName);
+        log(`Linking ${report.pluginName}...`);
+        await linkExtension(outputPath, useConsent, options.execFn);
+        reports.push(report);
+      }
+
+      const sourceCommit = await getSourceCommit(
+        plugin.sourcePath,
+        plugin.sourceType,
+        options.execFn
+      );
+
+      state = addPlugin(state, {
+        ...plugin,
+        lastTranslated: new Date().toISOString(),
+        sourceCommit: sourceCommit ?? plugin.sourceCommit,
       });
-    } else {
-      const report = await translate({
-        from: "claude",
-        to: "gemini",
-        source: plugin.sourcePath,
-        output: plugin.outputPath,
-      });
-      pluginReports = [report];
+
+      log(`Updated ${name}`);
+    } catch (err) {
+      const msg = (err as Error).message ?? String(err);
+      log(`Failed to update ${name}: ${msg}`);
+      failures.push({ name, error: msg });
     }
-
-    for (const report of pluginReports) {
-      const outputPath = join(translationsDir, report.pluginName);
-      log(`Linking extension: ${report.pluginName}`);
-      await linkExtension(outputPath, useConsent, options.execFn);
-      reports.push(report);
-    }
-
-    const sourceCommit = await getSourceCommit(
-      plugin.sourcePath,
-      plugin.sourceType,
-      options.execFn
-    );
-
-    state = addPlugin(state, {
-      ...plugin,
-      lastTranslated: new Date().toISOString(),
-      sourceCommit: sourceCommit ?? plugin.sourceCommit,
-    });
   }
 
   await writeState(state, options.statePath);
-  return reports;
+  return { reports, failures };
 }
