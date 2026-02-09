@@ -46,7 +46,9 @@ export async function translate(
 
   const targetAdapter = reg.getTarget(options.to);
   const ir = await sourceAdapter.parse(options.source);
-  const report = await targetAdapter.generate(ir, options.output);
+  const report = await targetAdapter.generate(ir, options.output, {
+    sourcePath: options.source,
+  });
 
   // Post-translation validation: parity check always runs,
   // gemini CLI validate only when opted in
@@ -124,7 +126,9 @@ async function translateMarketplaceFromJson(
       const targetAdapter = reg.getTarget(options.to);
       const ir = await sourceAdapter.parse(pluginPath);
       const outputPath = join(options.outputDir, ir.manifest.name);
-      const report = await targetAdapter.generate(ir, outputPath);
+      const report = await targetAdapter.generate(ir, outputPath, {
+        sourcePath: pluginPath,
+      });
 
       report.validation = validateTranslation(
         ir,
@@ -173,7 +177,9 @@ async function translateMarketplaceFromDirScan(
     const targetAdapter = reg.getTarget(options.to);
     const ir = await sourceAdapter.parse(entryPath);
     const outputPath = join(options.outputDir, ir.manifest.name);
-    const report = await targetAdapter.generate(ir, outputPath);
+    const report = await targetAdapter.generate(ir, outputPath, {
+      sourcePath: entryPath,
+    });
 
     report.validation = validateTranslation(
       ir,

@@ -1,29 +1,5 @@
 prompt = """You are the pluginx extension manager. Run:
 !{npx -y -p @epiphytic/ai-plugin-translator pluginx add {{args}}}
 
-If the output contains "CONSENT_REQUIRED", run the consent flow:
-
-Display this warning:
----
-PLUGINX SECURITY NOTICE
-
-pluginx is an EXPERIMENTAL tool that translates Claude Code plugins into Gemini CLI extensions.
-
-By using pluginx, you are installing code from third-party plugin developers into your Gemini CLI environment. These plugins may contain arbitrary shell commands in hooks, MCP servers, and command prompts.
-
-ONLY install plugins from developers that you trust.
----
-
-Present these three choices:
-1. "Yes, I understand the risks and want to bypass consent screens in the future" -> save consentLevel "bypass"
-2. "Yes, I understand the risks" (recommended) -> save consentLevel "acknowledged"
-3. "No, I don't consent" -> save consentLevel "declined", then STOP.
-
-Save the choice:
-!{mkdir -p ~/.gemini/extensions/pluginx && echo '{"consentLevel":"<CHOICE>"}' > ~/.gemini/extensions/pluginx/config.json}
-
-If they chose option 3, STOP. Otherwise, re-run:
-!{npx -y -p @epiphytic/ai-plugin-translator pluginx add {{args}}}
-
-Otherwise (no CONSENT_REQUIRED), display the output to the user.
+Display the output to the user.
 """

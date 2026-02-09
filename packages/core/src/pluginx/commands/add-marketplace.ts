@@ -1,22 +1,15 @@
-import { basename, join } from "path";
-import { stat } from "fs/promises";
-import { checkConsent, PLUGINX_DIR } from "../config.js";
+import { join } from "path";
+import { TRANSLATIONS_DIR } from "../config.js";
 import { readState, writeState, addPlugin } from "../state.js";
-import { clonePersistent, getCurrentCommit, type ExecFn } from "../git-ops.js";
-import { linkExtension, type ExecFn as LinkExecFn } from "../link.js";
+import { linkExtension } from "../link.js";
 import { translateMarketplace } from "../../translate.js";
-import { resolveGitUrl } from "../../utils/git.js";
-import type { TrackedPlugin } from "../types.js";
+import { resolveSource, getSourceCommit } from "../resolve-source.js";
+import { ensureConsent } from "../consent.js";
+import type { BaseCommandOptions, TrackedPlugin } from "../types.js";
 import type { TranslationReport } from "../../adapters/types.js";
 
-export interface AddMarketplaceOptions {
+export interface AddMarketplaceOptions extends BaseCommandOptions {
   source: string;
-  consent?: boolean;
-  json?: boolean;
-  configPath?: string;
-  statePath?: string;
-  gitExecFn?: ExecFn;
-  linkExecFn?: LinkExecFn;
 }
 
 export interface AddMarketplaceResult {
@@ -24,45 +17,17 @@ export interface AddMarketplaceResult {
   plugins: TrackedPlugin[];
 }
 
-const TRANSLATIONS_DIR = join(
-  PLUGINX_DIR,
-  "..",
-  "pluginx-translations"
-);
-
 export async function runAddMarketplace(
   options: AddMarketplaceOptions
 ): Promise<AddMarketplaceResult> {
-  const consentResult = options.consent
-    ? "bypass"
-    : await checkConsent(options.configPath);
+  const consent = await ensureConsent({
+    configPath: options.configPath,
+  });
 
-  if (consentResult === "required") {
-    console.log("CONSENT_REQUIRED");
-    process.exit(3);
-  }
+  const useConsent = consent === "bypass" || options.consent === true;
 
-  const useConsent = consentResult === "bypass" || options.consent === true;
-
-  const isLocal = await isLocalPath(options.source);
-  let sourcePath: string;
-  let sourceUrl: string | undefined;
-  let sourceType: "git" | "local";
-
-  const marketplaceName = deriveName(options.source);
-
-  if (isLocal) {
-    sourcePath = options.source;
-    sourceType = "local";
-  } else {
-    sourceUrl = options.source;
-    sourceType = "git";
-    sourcePath = await clonePersistent(
-      options.source,
-      marketplaceName,
-      options.gitExecFn
-    );
-  }
+  const { name: marketplaceName, sourcePath, sourceUrl, sourceType } =
+    await resolveSource(options.source, options.execFn);
 
   const reports = await translateMarketplace({
     from: "claude",
@@ -71,21 +36,18 @@ export async function runAddMarketplace(
     outputDir: TRANSLATIONS_DIR,
   });
 
-  let sourceCommit: string | undefined;
-  if (sourceType === "git") {
-    try {
-      sourceCommit = await getCurrentCommit(sourcePath, options.gitExecFn);
-    } catch {
-      // non-fatal
-    }
-  }
+  const sourceCommit = await getSourceCommit(
+    sourcePath,
+    sourceType,
+    options.execFn
+  );
 
   let state = await readState(options.statePath);
   const plugins: TrackedPlugin[] = [];
 
   for (const report of reports) {
     const outputPath = join(TRANSLATIONS_DIR, report.pluginName);
-    await linkExtension(outputPath, useConsent, options.linkExecFn);
+    await linkExtension(outputPath, useConsent, options.execFn);
 
     const plugin: TrackedPlugin = {
       name: report.pluginName,
@@ -105,21 +67,4 @@ export async function runAddMarketplace(
   await writeState(state, options.statePath);
 
   return { reports, plugins };
-}
-
-async function isLocalPath(source: string): Promise<boolean> {
-  try {
-    await stat(source);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function deriveName(source: string): string {
-  const resolved = resolveGitUrl(source);
-  if (resolved.includes("/")) {
-    return basename(resolved, ".git");
-  }
-  return basename(source);
 }

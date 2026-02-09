@@ -1,25 +1,10 @@
 import { mkdir } from "fs/promises";
 import { join } from "path";
-import { execFile } from "child_process";
 import { PLUGINX_DIR } from "./config.js";
+import { defaultExec, type ExecFn } from "./exec-utils.js";
 import { resolveGitUrl } from "../utils/git.js";
 
-export type ExecFn = (
-  cmd: string,
-  args: string[]
-) => Promise<{ stdout: string; stderr: string }>;
-
-function defaultExec(
-  cmd: string,
-  args: string[]
-): Promise<{ stdout: string; stderr: string }> {
-  return new Promise((resolve, reject) => {
-    execFile(cmd, args, (error, stdout, stderr) => {
-      if (error) reject(error);
-      else resolve({ stdout, stderr });
-    });
-  });
-}
+export type { ExecFn } from "./exec-utils.js";
 
 export const SOURCES_DIR = join(PLUGINX_DIR, "sources");
 

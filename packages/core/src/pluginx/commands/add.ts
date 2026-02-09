@@ -1,23 +1,15 @@
-import { basename } from "path";
-import { stat } from "fs/promises";
-import { checkConsent, PLUGINX_DIR } from "../config.js";
-import { readState, writeState, addPlugin } from "../state.js";
-import { clonePersistent, getCurrentCommit, type ExecFn } from "../git-ops.js";
-import { linkExtension, type ExecFn as LinkExecFn } from "../link.js";
-import { translate } from "../../translate.js";
-import { resolveGitUrl } from "../../utils/git.js";
-import type { TrackedPlugin } from "../types.js";
-import type { TranslationReport } from "../../adapters/types.js";
 import { join } from "path";
+import { TRANSLATIONS_DIR } from "../config.js";
+import { readState, writeState, addPlugin } from "../state.js";
+import { linkExtension } from "../link.js";
+import { translate } from "../../translate.js";
+import { resolveSource, getSourceCommit } from "../resolve-source.js";
+import { ensureConsent } from "../consent.js";
+import type { BaseCommandOptions, TrackedPlugin } from "../types.js";
+import type { TranslationReport } from "../../adapters/types.js";
 
-export interface AddOptions {
+export interface AddOptions extends BaseCommandOptions {
   source: string;
-  consent?: boolean;
-  json?: boolean;
-  configPath?: string;
-  statePath?: string;
-  gitExecFn?: ExecFn;
-  linkExecFn?: LinkExecFn;
 }
 
 export interface AddResult {
@@ -25,44 +17,17 @@ export interface AddResult {
   plugin: TrackedPlugin;
 }
 
-const TRANSLATIONS_DIR = join(
-  PLUGINX_DIR,
-  "..",
-  "pluginx-translations"
-);
-
 export async function runAdd(options: AddOptions): Promise<AddResult> {
-  const consentResult = options.consent
-    ? "bypass"
-    : await checkConsent(options.configPath);
+  const consent = await ensureConsent({
+    configPath: options.configPath,
+  });
 
-  if (consentResult === "required") {
-    console.log("CONSENT_REQUIRED");
-    process.exit(3);
-  }
+  const useConsent = consent === "bypass" || options.consent === true;
 
-  const useConsent = consentResult === "bypass" || options.consent === true;
-
-  // Determine if source is a URL or local path
-  const isLocal = await isLocalPath(options.source);
-  let sourcePath: string;
-  let sourceUrl: string | undefined;
-  let sourceType: "git" | "local";
-
-  const name = deriveName(options.source);
-
-  if (isLocal) {
-    sourcePath = options.source;
-    sourceType = "local";
-  } else {
-    sourceUrl = options.source;
-    sourceType = "git";
-    sourcePath = await clonePersistent(
-      options.source,
-      name,
-      options.gitExecFn
-    );
-  }
+  const { name, sourcePath, sourceUrl, sourceType } = await resolveSource(
+    options.source,
+    options.execFn
+  );
 
   const outputPath = join(TRANSLATIONS_DIR, name);
 
@@ -73,16 +38,13 @@ export async function runAdd(options: AddOptions): Promise<AddResult> {
     output: outputPath,
   });
 
-  await linkExtension(outputPath, useConsent, options.linkExecFn);
+  await linkExtension(outputPath, useConsent, options.execFn);
 
-  let sourceCommit: string | undefined;
-  if (sourceType === "git") {
-    try {
-      sourceCommit = await getCurrentCommit(sourcePath, options.gitExecFn);
-    } catch {
-      // non-fatal: commit tracking is optional
-    }
-  }
+  const sourceCommit = await getSourceCommit(
+    sourcePath,
+    sourceType,
+    options.execFn
+  );
 
   const plugin: TrackedPlugin = {
     name,
@@ -100,23 +62,4 @@ export async function runAdd(options: AddOptions): Promise<AddResult> {
   await writeState(newState, options.statePath);
 
   return { report, plugin };
-}
-
-async function isLocalPath(source: string): Promise<boolean> {
-  try {
-    await stat(source);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function deriveName(source: string): string {
-  const resolved = resolveGitUrl(source);
-  // Extract repo name from URL or use basename of local path
-  if (resolved.includes("/")) {
-    const name = basename(resolved, ".git");
-    return name;
-  }
-  return basename(source);
 }

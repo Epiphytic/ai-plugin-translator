@@ -1,5 +1,15 @@
+import type { ExecFn } from "./exec-utils.js";
+
 export interface PluginxConfig {
   consentLevel?: "bypass" | "acknowledged" | "declined";
+}
+
+export interface BaseCommandOptions {
+  consent?: boolean;
+  json?: boolean;
+  configPath?: string;
+  statePath?: string;
+  execFn?: ExecFn;
 }
 
 export interface TrackedPlugin {

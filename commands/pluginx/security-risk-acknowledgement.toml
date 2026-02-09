@@ -1,45 +1,5 @@
-prompt = """You are the pluginx extension manager. The user wants to manage their security consent settings for pluginx.
+prompt = """You are the pluginx extension manager. Run:
+!{npx -y -p @epiphytic/ai-plugin-translator pluginx consent}
 
-First, read the current config:
-!{cat ~/.gemini/extensions/pluginx/config.json 2>/dev/null || echo '{}'}
-
-IMPORTANT: Display this warning to the user EXACTLY:
-
----
-⚠️  PLUGINX SECURITY NOTICE
-
-pluginx is an EXPERIMENTAL tool that translates Claude Code plugins into Gemini CLI extensions.
-
-By using pluginx, you are installing code from third-party plugin developers into your Gemini CLI environment. These plugins may contain arbitrary shell commands in hooks, MCP servers, and command prompts.
-
-ONLY install plugins from developers that you trust.
-
-Please choose one of the following options:
----
-
-Then present these three choices to the user:
-
-1. "Yes, I understand the risks and want to bypass consent screens in the future"
-   → This adds --consent to gemini extensions link/install, skipping Gemini CLI's built-in confirmation prompt each time a plugin is installed through pluginx.
-
-2. "Yes, I understand the risks" (recommended)
-   → You can use pluginx normally. Gemini CLI will still show its own consent prompt each time you install a translated plugin, giving you a chance to review before accepting.
-
-3. "No, I don't consent"
-   → pluginx will exit. This screen will appear again next time you run a pluginx command.
-
-Ask the user which option they choose. Then:
-
-- If they choose option 1 (bypass):
-  !{mkdir -p ~/.gemini/extensions/pluginx && echo '{"consentLevel":"bypass"}' > ~/.gemini/extensions/pluginx/config.json}
-  Tell them: "Consent screens will be bypassed for future plugin installations. You can change this anytime with /pluginx security-risk-acknowledgement."
-
-- If they choose option 2 (acknowledged):
-  !{mkdir -p ~/.gemini/extensions/pluginx && echo '{"consentLevel":"acknowledged"}' > ~/.gemini/extensions/pluginx/config.json}
-  Tell them: "Settings saved. Gemini CLI will still show a consent prompt when installing each plugin. You can change this anytime with /pluginx security-risk-acknowledgement."
-
-- If they choose option 3 (decline):
-  !{mkdir -p ~/.gemini/extensions/pluginx && echo '{"consentLevel":"declined"}' > ~/.gemini/extensions/pluginx/config.json}
-  Tell them: "Understood. pluginx will not proceed. This prompt will appear again next time you run a pluginx command."
-  Do NOT proceed with any other actions.
+Display the output to the user.
 """

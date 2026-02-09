@@ -32,4 +32,4 @@ Thumbs.db
 *.tgz
 
 # Regression test clones
-test/fixtures/cloned-sources/
+**/test/fixtures/cloned-sources/
