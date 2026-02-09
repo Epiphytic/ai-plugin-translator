@@ -1,3 +1,4 @@
+description = "Generate contextual briefings for legal work — daily summary, topic research, or incident response"
 prompt = """
 # /brief -- Legal Team Briefing
 

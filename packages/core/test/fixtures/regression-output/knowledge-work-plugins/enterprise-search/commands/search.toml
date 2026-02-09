@@ -1,3 +1,4 @@
+description = "Search across all connected sources in one query"
 prompt = """
 # Search Command
 

@@ -1,3 +1,4 @@
+description = "Analyze pipeline health — prioritize deals, flag risks, get a weekly action plan"
 prompt = """
 # /pipeline-review
 

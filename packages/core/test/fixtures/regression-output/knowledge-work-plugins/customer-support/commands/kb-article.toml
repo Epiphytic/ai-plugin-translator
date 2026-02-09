@@ -1,3 +1,4 @@
+description = "Draft a knowledge base article from a resolved issue or common question"
 prompt = """
 # KB Article
 

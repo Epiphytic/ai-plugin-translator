@@ -1,3 +1,4 @@
+description = "Generate a full campaign brief with objectives, channels, content calendar, and success metrics"
 prompt = """
 # Campaign Plan
 

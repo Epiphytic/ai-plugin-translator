@@ -1,3 +1,4 @@
+description = "Generate an income statement with period-over-period comparison and variance analysis"
 prompt = """
 # Income Statement Generation
 

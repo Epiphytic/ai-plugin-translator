@@ -1,3 +1,4 @@
+description = "Prepare journal entries with proper debits, credits, and supporting detail"
 prompt = """
 # Journal Entry Preparation
 

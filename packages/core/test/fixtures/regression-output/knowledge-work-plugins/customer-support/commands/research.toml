@@ -1,3 +1,4 @@
+description = "Multi-source research on a customer question or topic with source attribution"
 prompt = """
 # Research
 

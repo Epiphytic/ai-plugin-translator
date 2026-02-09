@@ -1,3 +1,4 @@
+description = "Profile and explore a dataset to understand its shape, quality, and patterns"
 prompt = """
 # /explore-data - Profile and Explore a Dataset
 

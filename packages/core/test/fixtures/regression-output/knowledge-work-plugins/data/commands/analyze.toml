@@ -1,3 +1,4 @@
+description = "Answer data questions -- from quick lookups to full analyses"
 prompt = """
 # /analyze - Answer Data Questions
 

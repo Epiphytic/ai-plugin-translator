@@ -1,3 +1,4 @@
+description = "Draft a professional customer-facing response tailored to the situation and relationship"
 prompt = """
 # Draft Response
 

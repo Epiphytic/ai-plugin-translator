@@ -12,6 +12,29 @@ describe("generateGeminiCommand", () => {
     };
     const result = generateGeminiCommand(cmd);
     expect(result.toml).toContain('prompt = """Say hello to {{args}}"""');
+    expect(result.toml).toContain('description = "Say hello"');
+  });
+
+  it("omits description when empty", () => {
+    const cmd: CommandIR = {
+      name: "greet",
+      description: "",
+      prompt: "Say hello",
+      shellInjections: [],
+    };
+    const result = generateGeminiCommand(cmd);
+    expect(result.toml).not.toContain("description");
+  });
+
+  it("escapes quotes in description", () => {
+    const cmd: CommandIR = {
+      name: "test",
+      description: 'Say "hello" to the world',
+      prompt: "Test",
+      shellInjections: [],
+    };
+    const result = generateGeminiCommand(cmd);
+    expect(result.toml).toContain('description = "Say \\"hello\\" to the world"');
   });
 
   it("preserves shell injections in brace format", () => {

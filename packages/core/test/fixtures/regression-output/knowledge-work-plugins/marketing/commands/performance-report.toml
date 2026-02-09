@@ -1,3 +1,4 @@
+description = "Build a marketing performance report with key metrics, trends, and optimization recommendations"
 prompt = """
 # Performance Report
 

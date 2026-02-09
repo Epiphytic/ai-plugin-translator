@@ -1,3 +1,4 @@
+description = "Search previous Claude Code conversations using semantic or text search"
 prompt = """
 # Search Past Conversations
 

@@ -1,3 +1,4 @@
+description = "Research competitors and generate a positioning and messaging comparison"
 prompt = """
 # Competitive Brief
 

@@ -1,3 +1,4 @@
+description = "Synthesize user research from interviews, surveys, and feedback into structured insights"
 prompt = """
 # Synthesize Research
 

@@ -17,7 +17,13 @@ export function generateGeminiCommand(cmd: CommandIR): CommandGeneratorResult {
     );
   }
 
-  const toml = `prompt = """${cmd.prompt}"""`;
+  const lines: string[] = [];
+  if (cmd.description) {
+    const escaped = cmd.description.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    lines.push(`description = "${escaped}"`);
+  }
+  lines.push(`prompt = """${cmd.prompt}"""`);
+  const toml = lines.join("\n");
 
   return {
     toml,

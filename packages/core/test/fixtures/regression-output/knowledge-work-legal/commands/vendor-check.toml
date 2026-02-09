@@ -1,3 +1,4 @@
+description = "Check the status of existing agreements with a vendor across all connected systems"
 prompt = """
 # /vendor-check -- Vendor Agreement Status
 
