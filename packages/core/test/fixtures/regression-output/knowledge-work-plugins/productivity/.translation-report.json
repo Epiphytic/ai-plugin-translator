@@ -29,7 +29,9 @@
     }
   ],
   "skipped": [],
-  "warnings": [],
+  "warnings": [
+    "adapted skill content: replaced path variable ${CLAUDE_PLUGIN_ROOT}"
+  ],
   "validation": {
     "valid": true,
     "parity": {

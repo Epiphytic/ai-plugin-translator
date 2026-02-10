@@ -26,6 +26,7 @@
   ],
   "skipped": [],
   "warnings": [
+    "adapted skill content: replaced tool name reference",
     "agent \"browser-user\": dropped unsupported field \"tools\"",
     "agent \"browser-user\": dropped unsupported field \"model\"",
     "agent \"browser-user\": dropped unsupported field \"permissionMode\"",

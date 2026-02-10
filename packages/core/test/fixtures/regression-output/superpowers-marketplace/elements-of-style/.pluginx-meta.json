@@ -1,6 +1,11 @@
 {
   "from": "claude",
   "to": "gemini",
-  "translatedAt": "2026-02-09T00:13:21.514Z",
-  "translatorVersion": "0.1.0"
+  "translatedAt": "2026-02-10T04:53:35.372Z",
+  "translatorVersion": "1.1.0",
+  "sourcePath": "/var/folders/ps/kk0xycp9121dn6bpz_wrgp_80000gn/T/pluginx-clone-VyLOm9",
+  "environment": {
+    "os": "darwin-arm64",
+    "nodeVersion": "v22.18.0"
+  }
 }

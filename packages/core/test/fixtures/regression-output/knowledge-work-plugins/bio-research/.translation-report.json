@@ -37,7 +37,9 @@
     }
   ],
   "skipped": [],
-  "warnings": [],
+  "warnings": [
+    "adapted skill content: replaced tool name reference"
+  ],
   "validation": {
     "valid": true,
     "parity": {

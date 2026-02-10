@@ -3,16 +3,16 @@ name: developing-claude-code-plugins
 description: Use when working on Claude Code plugins (creating, modifying, testing, releasing, or maintaining) - provides streamlined workflows, patterns, and examples for the complete plugin lifecycle
 ---
 
-# Developing Claude Code Plugins
+# Developing Gemini CLI Plugins
 
 ## Overview
 
-This skill provides efficient workflows for creating Claude Code plugins. Use it to make plugin development fast and correct - it synthesizes official docs into actionable steps and provides working examples.
+This skill provides efficient workflows for creating Gemini CLI plugins. Use it to make plugin development fast and correct - it synthesizes official docs into actionable steps and provides working examples.
 
 ## When to Use
 
 Use this skill when:
-- Creating a new Claude Code plugin from scratch
+- Creating a new Gemini CLI plugin from scratch
 - Adding components to an existing plugin (skills, commands, hooks, MCP servers)
 - Setting up a development marketplace for testing
 - Troubleshooting plugin structure issues
@@ -52,7 +52,7 @@ Before writing code:
 3. **Review examples**
    - `examples/simple-greeter-plugin/` - Minimal plugin
    - `examples/full-featured-plugin/` - All components
-   - Installed plugins in `~/.claude/plugins/`
+   - Installed plugins in `~/.gemini/plugins/`
 
 ### Phase 2: Create Structure
 
@@ -114,7 +114,7 @@ For each component type, see:
    /plugin marketplace add /path/to/my-plugin
    /plugin install my-plugin@my-dev
    ```
-   Then restart Claude Code.
+   Then restart Gemini CLI.
 
 2. **Test each component**:
    - Skills: Ask for tasks matching skill descriptions
@@ -127,7 +127,7 @@ For each component type, see:
    /plugin uninstall my-plugin@my-dev
    # Make changes
    /plugin install my-plugin@my-dev
-   # Restart Claude Code
+   # Restart Gemini CLI
    ```
 
 ### Phase 5: Debug and Refine
@@ -141,8 +141,8 @@ If something doesn't work, read `references/troubleshooting.md` for:
 
 Common issues are usually:
 - Wrong directory structure
-- Hardcoded paths (use `${CLAUDE_PLUGIN_ROOT}`)
-- Forgot to restart Claude Code
+- Hardcoded paths (use `${extensionPath}`)
+- Forgot to restart Gemini CLI
 - Missing executable permissions on scripts
 
 ### Phase 6: Release and Distribute
@@ -229,7 +229,7 @@ Common issues are usually:
    - ❌ Don't put skills, commands, or other components inside
    - ✅ Put them at plugin root
 
-2. **Use `${CLAUDE_PLUGIN_ROOT}` for all paths in config files**
+2. **Use `${extensionPath}` for all paths in config files**
    - Makes plugin portable across systems
    - Required for hooks, MCP servers, scripts
 

@@ -105,6 +105,11 @@
     "command \"brainstorm\": disable-model-invocation not supported in Gemini TOML commands",
     "command \"execute-plan\": disable-model-invocation not supported in Gemini TOML commands",
     "command \"write-plan\": disable-model-invocation not supported in Gemini TOML commands",
+    "adapted skill content: replaced tool name reference",
+    "adapted skill content: replaced tool name reference",
+    "adapted skill content: replaced bold directive pattern",
+    "adapted skill content: replaced path ~/.claude/",
+    "adapted skill content: replaced tool name reference",
     "agent \"code-reviewer\": dropped unsupported field \"model\""
   ],
   "validation": {
