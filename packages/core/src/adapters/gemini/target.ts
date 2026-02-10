@@ -64,11 +64,13 @@ export class GeminiTargetAdapter implements TargetAdapter {
     for (const skill of ir.skills) {
       const skillDir = join(outputPath, "skills", skill.name);
       await mkdir(skillDir, { recursive: true });
+      const skillResult = generateGeminiSkill(skill);
       await writeFile(
         join(skillDir, "SKILL.md"),
-        generateGeminiSkill(skill) + "\n"
+        skillResult.content + "\n"
       );
       translated.push({ type: "skill", name: skill.name });
+      warnings.push(...skillResult.warnings);
     }
 
     // Hooks

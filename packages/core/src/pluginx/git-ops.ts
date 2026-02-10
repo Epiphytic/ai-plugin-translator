@@ -8,7 +8,7 @@ import { resolveGitUrl } from "../utils/git.js";
 export type { ExecFn } from "./exec-utils.js";
 export type ProgressFn = (message: string) => void;
 
-export const SOURCES_DIR = join(PLUGINX_DIR, "sources");
+export const SOURCES_DIR = join(PLUGINX_DIR, "..", "pluginx-sources");
 
 /**
  * Spawn a git command and stream stderr progress lines to `onProgress`.

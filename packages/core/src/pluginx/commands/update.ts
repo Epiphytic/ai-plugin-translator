@@ -21,6 +21,7 @@ export interface UpdateResult {
 
 export interface UpdateOptions extends BaseCommandOptions {
   names: string[];
+  force?: boolean;
 }
 
 export async function runUpdate(
@@ -57,6 +58,18 @@ export async function runUpdate(
           options.execFn,
           (gitLine) => log(`${prefix}  ${gitLine}`),
         );
+      }
+
+      if (plugin.sourceType === "git" && !options.force) {
+        const currentCommit = await getSourceCommit(
+          plugin.sourcePath,
+          plugin.sourceType,
+          options.execFn
+        );
+        if (currentCommit && currentCommit === plugin.sourceCommit) {
+          log(`${prefix}No changes for ${name}, skipping`);
+          continue;
+        }
       }
 
       let pluginReports: TranslationReport[];

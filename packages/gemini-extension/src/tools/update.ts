@@ -20,8 +20,12 @@ export function registerUpdateTool(
         .boolean()
         .optional()
         .describe("Pass --consent to gemini extensions link"),
+      force: z
+        .boolean()
+        .optional()
+        .describe("Re-translate even if source is unchanged"),
     },
-    async ({ names, consent }) => {
+    async ({ names, consent, force }) => {
       log(`Starting update for ${names.join(", ")}...`);
 
       const check = await requireConsent(server);
@@ -31,6 +35,7 @@ export function registerUpdateTool(
         const { reports, failures } = await runUpdate({
           names,
           consent,
+          force,
           consentLevel: check.consentLevel,
           onProgress: log,
         });

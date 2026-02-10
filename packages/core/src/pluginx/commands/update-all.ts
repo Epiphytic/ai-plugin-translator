@@ -2,7 +2,9 @@ import { readState } from "../state.js";
 import { runUpdate, type UpdateResult } from "./update.js";
 import type { BaseCommandOptions } from "../types.js";
 
-export interface UpdateAllOptions extends BaseCommandOptions {}
+export interface UpdateAllOptions extends BaseCommandOptions {
+  force?: boolean;
+}
 
 export async function runUpdateAll(
   options: UpdateAllOptions
@@ -19,6 +21,7 @@ export async function runUpdateAll(
 
   return runUpdate({
     names,
+    force: options.force,
     consent: options.consent,
     json: options.json,
     consentLevel: options.consentLevel,

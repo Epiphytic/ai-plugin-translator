@@ -18,10 +18,11 @@ describe("generateGeminiSkill", () => {
         "allowed-tools": "Read,Grep",
       },
     };
-    const result = generateGeminiSkill(skill);
-    expect(result).toContain("---");
-    expect(result).toContain("name: review");
-    expect(result).toContain("# Code Review");
+    const { content, warnings } = generateGeminiSkill(skill);
+    expect(content).toContain("---");
+    expect(content).toContain("name: review");
+    expect(content).toContain("# Code Review");
+    expect(warnings).toEqual([]);
   });
 
   it("strips claude-specific frontmatter keys", () => {
@@ -35,8 +36,8 @@ describe("generateGeminiSkill", () => {
         "allowed-tools": "Read",
       },
     };
-    const result = generateGeminiSkill(skill);
-    expect(result).not.toContain("allowed-tools");
+    const { content } = generateGeminiSkill(skill);
+    expect(content).not.toContain("allowed-tools");
   });
 });
 

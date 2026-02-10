@@ -152,8 +152,9 @@ program
   .description("Update named plugins (pull, re-translate, re-link)")
   .argument("<names...>", "Plugin names to update")
   .option("--consent", "Pass --consent to gemini extensions link")
+  .option("--force", "Re-translate even if source is unchanged")
   .option("--json", "Output structured JSON")
-  .action(async (names: string[], opts: { consent?: boolean; json?: boolean }) => {
+  .action(async (names: string[], opts: { consent?: boolean; force?: boolean; json?: boolean }) => {
     try {
       const g = globals();
       const { reports, failures } = await runUpdate({ names, ...opts, ...g });
@@ -177,8 +178,9 @@ program
   .command("update-all")
   .description("Update all tracked plugins")
   .option("--consent", "Pass --consent to gemini extensions link")
+  .option("--force", "Re-translate even if source is unchanged")
   .option("--json", "Output structured JSON")
-  .action(async (opts: { consent?: boolean; json?: boolean }) => {
+  .action(async (opts: { consent?: boolean; force?: boolean; json?: boolean }) => {
     try {
       const g = globals();
       const { reports, failures } = await runUpdateAll({ ...opts, ...g });
