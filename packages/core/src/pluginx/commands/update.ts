@@ -1,3 +1,4 @@
+import { readFile } from "fs/promises";
 import { join } from "path";
 import { TRANSLATIONS_DIR } from "../config.js";
 import { readState, writeState, addPlugin, findPlugin } from "../state.js";
@@ -6,6 +7,7 @@ import { linkExtension } from "../link.js";
 import { translate, translateMarketplace } from "../../translate.js";
 import { getSourceCommit } from "../resolve-source.js";
 import { ensureConsent } from "../consent.js";
+import { VERSION } from "../../version.js";
 import type { BaseCommandOptions } from "../types.js";
 import type { TranslationReport } from "../../adapters/types.js";
 
@@ -66,7 +68,26 @@ export async function runUpdate(
           plugin.sourceType,
           options.execFn
         );
-        if (currentCommit && currentCommit === plugin.sourceCommit) {
+
+        // Check if translator version has changed since last translation
+        let translatorVersionChanged = false;
+        try {
+          const metaPath = join(plugin.outputPath, ".pluginx-meta.json");
+          const meta = JSON.parse(await readFile(metaPath, "utf-8"));
+          if (meta.translatorVersion && meta.translatorVersion !== VERSION) {
+            translatorVersionChanged = true;
+            log(`${prefix}Translator version changed (${meta.translatorVersion} -> ${VERSION}), re-translating ${name}`);
+          }
+        } catch {
+          // Meta file missing or unreadable — re-translate to be safe
+          translatorVersionChanged = true;
+        }
+
+        if (
+          !translatorVersionChanged &&
+          currentCommit &&
+          currentCommit === plugin.sourceCommit
+        ) {
           log(`${prefix}No changes for ${name}, skipping`);
           continue;
         }

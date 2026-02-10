@@ -8,6 +8,7 @@ import type {
   GenerateOptions,
 } from "../types.js";
 import type { PluginIR } from "../../ir/types.js";
+import { VERSION } from "../../version.js";
 import { generateGeminiManifest } from "./generators/manifest.js";
 import { generateGeminiCommand } from "./generators/commands.js";
 import { generateGeminiSkill } from "./generators/skills.js";
@@ -148,7 +149,12 @@ export class GeminiTargetAdapter implements TargetAdapter {
           from: "claude",
           to: "gemini",
           translatedAt: new Date().toISOString(),
-          translatorVersion: "0.1.0",
+          translatorVersion: VERSION,
+          sourcePath: options?.sourcePath,
+          environment: {
+            os: `${process.platform}-${process.arch}`,
+            nodeVersion: process.version,
+          },
         },
         null,
         2

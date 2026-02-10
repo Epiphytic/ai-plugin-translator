@@ -3,6 +3,7 @@ import { writeFile, mkdir, rm } from "fs/promises";
 import { join } from "path";
 import { tmpdir } from "os";
 import { runUpdate } from "../../../../src/pluginx/commands/update.js";
+import { VERSION } from "../../../../src/version.js";
 import type { PluginxState } from "../../../../src/pluginx/types.js";
 
 // Mock translate to avoid real file I/O
@@ -68,9 +69,18 @@ describe("pluginx/commands/update skip-if-unchanged", () => {
     };
   }
 
-  it("skips re-translation when commit hash is unchanged", async () => {
+  async function writeMetaFile(outputDir: string, translatorVersion: string): Promise<void> {
+    await mkdir(outputDir, { recursive: true });
+    await writeFile(
+      join(outputDir, ".pluginx-meta.json"),
+      JSON.stringify({ from: "claude", to: "gemini", translatorVersion })
+    );
+  }
+
+  it("skips re-translation when commit hash and translator version are unchanged", async () => {
     const statePath = join(tmpDir, "state.json");
     await writeFile(statePath, JSON.stringify(makeState()));
+    await writeMetaFile(join(tmpDir, "output"), VERSION);
 
     const progressMessages: string[] = [];
     const mockExec = vi.fn().mockResolvedValue({ stdout: "abc123\n", stderr: "" });
@@ -91,8 +101,46 @@ describe("pluginx/commands/update skip-if-unchanged", () => {
   it("re-translates when commit hash has changed", async () => {
     const statePath = join(tmpDir, "state.json");
     await writeFile(statePath, JSON.stringify(makeState()));
+    await writeMetaFile(join(tmpDir, "output"), VERSION);
 
     const mockExec = vi.fn().mockResolvedValue({ stdout: "new456\n", stderr: "" });
+
+    const { reports } = await runUpdate({
+      names: ["test-plugin"],
+      statePath,
+      execFn: mockExec,
+      consentLevel: "bypass",
+    });
+
+    expect(reports).toHaveLength(1);
+  });
+
+  it("re-translates when translator version has changed", async () => {
+    const statePath = join(tmpDir, "state.json");
+    await writeFile(statePath, JSON.stringify(makeState()));
+    await writeMetaFile(join(tmpDir, "output"), "0.0.1-old");
+
+    const progressMessages: string[] = [];
+    const mockExec = vi.fn().mockResolvedValue({ stdout: "abc123\n", stderr: "" });
+
+    const { reports } = await runUpdate({
+      names: ["test-plugin"],
+      statePath,
+      execFn: mockExec,
+      consentLevel: "bypass",
+      onProgress: (msg) => progressMessages.push(msg),
+    });
+
+    expect(reports).toHaveLength(1);
+    expect(progressMessages.some((m) => m.includes("Translator version changed"))).toBe(true);
+  });
+
+  it("re-translates when meta file is missing", async () => {
+    const statePath = join(tmpDir, "state.json");
+    await writeFile(statePath, JSON.stringify(makeState()));
+    // No meta file written — should trigger re-translate
+
+    const mockExec = vi.fn().mockResolvedValue({ stdout: "abc123\n", stderr: "" });
 
     const { reports } = await runUpdate({
       names: ["test-plugin"],
@@ -107,6 +155,7 @@ describe("pluginx/commands/update skip-if-unchanged", () => {
   it("re-translates when --force is true even if unchanged", async () => {
     const statePath = join(tmpDir, "state.json");
     await writeFile(statePath, JSON.stringify(makeState()));
+    await writeMetaFile(join(tmpDir, "output"), VERSION);
 
     const mockExec = vi.fn().mockResolvedValue({ stdout: "abc123\n", stderr: "" });
 
@@ -127,6 +176,7 @@ describe("pluginx/commands/update skip-if-unchanged", () => {
       statePath,
       JSON.stringify(makeState({ sourceCommit: undefined }))
     );
+    await writeMetaFile(join(tmpDir, "output"), VERSION);
 
     const mockExec = vi.fn().mockResolvedValue({ stdout: "abc123\n", stderr: "" });
 
