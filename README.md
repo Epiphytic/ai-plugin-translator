@@ -50,9 +50,10 @@ Behind the scenes, Gemini calls MCP tools like `pluginx_add`, `pluginx_list`, `p
 | `pluginx_add_marketplace` | Add all plugins from a Claude Code marketplace repo |
 | `pluginx_list` | List all tracked plugins |
 | `pluginx_status` | Check if plugins are up to date with their sources |
-| `pluginx_update` | Update specific plugins by name |
-| `pluginx_update_all` | Update all tracked plugins |
+| `pluginx_update` | Update specific plugins by name (skips unchanged, `force` to override) |
+| `pluginx_update_all` | Update all tracked plugins (skips unchanged, `force` to override) |
 | `pluginx_remove` | Remove a tracked plugin |
+| `pluginx_consent` | Manage security consent settings |
 
 ### Security consent
 
@@ -103,12 +104,29 @@ pluginx list
 # Check for updates
 pluginx status
 
-# Update all plugins
+# Update all plugins (skips unchanged sources automatically)
 pluginx update-all
+
+# Force re-translation even if source hasn't changed
+pluginx update-all --force
+
+# Update specific plugins
+pluginx update superpowers
 
 # Remove a plugin
 pluginx remove superpowers
 ```
+
+#### Global options
+
+| Option | Description |
+|--------|-------------|
+| `--consent` | Auto-consent to `gemini extensions link` prompts |
+| `--force` | Re-translate even if source commit and translator version are unchanged |
+| `--json` | Output structured JSON instead of human-readable text |
+| `--non-interactive` | Skip interactive prompts (auto-acknowledge consent) |
+| `--config-path <path>` | Custom config file path |
+| `--state-path <path>` | Custom state file path |
 
 ### Exit codes
 
@@ -125,10 +143,10 @@ The translator converts these Claude Code plugin components into their Gemini CL
 | Component | Claude Code | Gemini CLI |
 |-----------|------------|------------|
 | Manifest | `package.json` | `gemini-extension.json` |
-| Slash commands | `commands/*.md` | `commands/**/*.md` |
-| Skills | `skills/**/*.md` | `commands/**/*.md` |
+| Slash commands | `commands/*.md` | `commands/*.toml` |
+| Skills | `skills/**/*.md` | `skills/**/*.md` (content adapted) |
 | Agents | `.claude/agents/*.md` | `agents/*.md` |
-| Hooks | `.claude/settings.json` | `hooks.toml` |
+| Hooks | `.claude/settings.json` | `hooks/hooks.json` |
 | MCP servers | `.claude/settings.json` | `gemini-extension.json` mcpServers |
 | Context files | `CLAUDE.md` | `GEMINI.md` |
 | Passthrough files | Static assets, scripts | Copied as-is |
@@ -140,8 +158,37 @@ The translator converts these Claude Code plugin components into their Gemini CL
 - **Argument placeholders**: `$ARGUMENTS` becomes `{{args}}`
 - **Shell injections**: `` !`command` `` becomes `!{command}`
 - **Hook events**: `PreToolUse` / `PostToolUse` / `Stop` map to `BeforeTool` / `AfterTool` / `AfterAgent`
+- **Skill content adaptation**: Claude-specific references in skill bodies are adapted (e.g., `**For Claude:**` becomes `**For Gemini:**`, `Claude Code` becomes `Gemini CLI`, `~/.claude/` paths become `~/.gemini/`)
 
 Components that don't have a Gemini equivalent (e.g., `.lsp.json`, `SubagentStop` hooks) are reported as skipped in the translation report -- never silently dropped.
+
+### Smart updates
+
+When running `pluginx update` or `pluginx update-all`, plugins are only re-translated when something has actually changed:
+
+- **Source commit changed** -- the upstream repository has new commits
+- **Translator version changed** -- a newer version of ai-plugin-translator is installed
+- **Meta file missing** -- the output directory lacks `.pluginx-meta.json` (e.g., first run after upgrade)
+
+Use `--force` to bypass these checks and re-translate unconditionally.
+
+### Translation metadata
+
+Each translated plugin includes a `.pluginx-meta.json` file at its root with translation provenance:
+
+```json
+{
+  "from": "claude",
+  "to": "gemini",
+  "translatedAt": "2026-02-10T04:53:21.072Z",
+  "translatorVersion": "1.1.0",
+  "sourcePath": "/path/to/source",
+  "environment": {
+    "os": "darwin-arm64",
+    "nodeVersion": "v22.18.0"
+  }
+}
+```
 
 ## How it works
 
@@ -184,7 +231,7 @@ pnpm install
 # Build all packages
 pnpm build
 
-# Run all tests (196 tests across 32 files)
+# Run all tests (218 tests across 34 files)
 pnpm test
 
 # Run specific test suites
