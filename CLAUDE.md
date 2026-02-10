@@ -7,7 +7,7 @@ Deterministic CLI tool that translates AI coding agent plugins between ecosystem
 Monorepo with two packages (pnpm workspaces):
 
 - **`packages/core`** (`ai-plugin-translator`) - Translation engine with adapter pattern: `SourceAdapter.parse()` -> IR -> `TargetAdapter.generate()`
-- **`packages/gemini-extension`** (`pluginx`) - Gemini CLI extension wrapping the core CLI
+- **`packages/gemini-extension`** (`pluginx`) - Gemini CLI MCP server extension that imports core library directly
 
 Each ecosystem is an adapter module. The IR (`PluginIR`) is a normalized superset of all plugin components. Adding a new ecosystem = one new adapter.
 
@@ -38,9 +38,16 @@ packages/
     adapters/claude/source.ts # ClaudeSourceAdapter + parsers/
     adapters/gemini/target.ts # GeminiTargetAdapter + generators/
     registry.ts               # Adapter registration
-    cli.ts                    # CLI entry point
-    report.ts                 # TranslationReport generation
-  gemini-extension/            # pluginx Gemini extension
+    cli.ts                    # CLI entry point (ai-plugin-translator)
+    pluginx.ts                # CLI entry point (pluginx)
+    pluginx/commands/          # Pluginx command functions (library API)
+    index.ts                  # Library exports (translation + pluginx API)
+  gemini-extension/
+    src/server.ts             # MCP server entry point
+    src/tools/                # Tool handlers (import core library directly)
+    commands/pluginx/          # TOML slash commands
+    gemini-extension.json     # Manifest with MCP server config
+    GEMINI.md                 # Model instructions (consent flow, usage)
 ```
 
 ## Design References

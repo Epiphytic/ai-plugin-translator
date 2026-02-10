@@ -1,3 +1,4 @@
+description = "Process call notes or a transcript — extract action items, draft follow-up email, generate internal summary"
 prompt = """
 # /call-summary
 

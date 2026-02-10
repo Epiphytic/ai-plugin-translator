@@ -273,7 +273,7 @@ nextflow run nf-core/<pipeline> -resume
 
 ## Disclaimer
 
-This skill is provided as a prototype example demonstrating how to integrate nf-core bioinformatics pipelines into Claude Code for automated analysis workflows. The current implementation supports three pipelines (rnaseq, sarek, and atacseq), serving as a foundation that enables the community to expand support to the full set of nf-core pipelines.
+This skill is provided as a prototype example demonstrating how to integrate nf-core bioinformatics pipelines into Gemini CLI for automated analysis workflows. The current implementation supports three pipelines (rnaseq, sarek, and atacseq), serving as a foundation that enables the community to expand support to the full set of nf-core pipelines.
 
 It is intended for educational and research purposes and should not be considered production-ready without appropriate validation for your specific use case. Users are responsible for ensuring their computing environment meets pipeline requirements and for verifying analysis results.
 

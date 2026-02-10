@@ -3,21 +3,21 @@ name: working-with-claude-code
 description: Use when working with Claude Code CLI, plugins, hooks, MCP servers, skills, configuration, or any Claude Code feature - provides comprehensive official documentation for all aspects of Claude Code
 ---
 
-# Working with Claude Code
+# Working with Gemini CLI
 
 ## Overview
 
-This skill provides complete, authoritative documentation for Claude Code directly from docs.claude.com. Instead of guessing about configuration paths, API structures, or feature capabilities, read the official docs stored in this skill's references directory.
+This skill provides complete, authoritative documentation for Gemini CLI directly from docs.claude.com. Instead of guessing about configuration paths, API structures, or feature capabilities, read the official docs stored in this skill's references directory.
 
 ## When to Use
 
 Use this skill when:
-- Creating or configuring Claude Code plugins
+- Creating or configuring Gemini CLI plugins
 - Setting up MCP servers
 - Working with hooks (pre-commit, session-start, etc.)
 - Writing or testing skills
-- Configuring Claude Code settings
-- Troubleshooting Claude Code issues
+- Configuring Gemini CLI settings
+- Troubleshooting Gemini CLI issues
 - Understanding CLI commands
 - Setting up integrations (VS Code, JetBrains, etc.)
 - Configuring networking, security, or enterprise features
@@ -41,7 +41,7 @@ All documentation is stored as individual markdown files in `references/`. Use t
 
 ```
 references/
-├── overview.md              # Claude Code introduction
+├── overview.md              # Gemini CLI introduction
 ├── quickstart.md           # Getting started guide
 ├── setup.md                # Installation and setup
 ├── plugins.md              # Plugin development
@@ -96,7 +96,7 @@ references/
 
 **Example:**
 ```
-User: "How do I create a Claude Code plugin?"
+User: "How do I create a Gemini CLI plugin?"
 → Read @references/plugins.md
 → Follow the official plugin creation steps
 ```
@@ -105,7 +105,7 @@ User: "How do I create a Claude Code plugin?"
 
 When exploring a topic, start with the overview document, then drill into specific files:
 
-- **Extending Claude Code**: Start with `plugins.md`, `skills.md`, or `mcp.md`
+- **Extending Gemini CLI**: Start with `plugins.md`, `skills.md`, or `mcp.md`
 - **Configuration**: Start with `settings.md` or `setup.md`
 - **Integrations**: Check relevant integration file (vs-code.md, github-actions.md, etc.)
 - **Troubleshooting**: Start with `troubleshooting.md`
@@ -116,7 +116,7 @@ Use Grep tool to search across all documentation:
 
 ```bash
 pattern: "search term"
-path: ~/.claude/skills/working-with-claude-code/references/
+path: ~/.gemini/skills/working-with-claude-code/references/
 ```
 
 ## Updating Documentation
@@ -125,16 +125,16 @@ The skill includes `scripts/update_docs.js` to fetch the latest documentation fr
 
 Run when:
 - Documentation seems outdated
-- New Claude Code features are released
+- New Gemini CLI features are released
 - Official docs have been updated
 
 ```bash
-node ~/.claude/skills/working-with-claude-code/scripts/update_docs.js
+node ~/.gemini/skills/working-with-claude-code/scripts/update_docs.js
 ```
 
 The script:
 1. Fetches llms.txt from docs.claude.com
-2. Extracts all Claude Code documentation URLs
+2. Extracts all Gemini CLI documentation URLs
 3. Downloads each page to `references/`
 4. Reports success/failures
 

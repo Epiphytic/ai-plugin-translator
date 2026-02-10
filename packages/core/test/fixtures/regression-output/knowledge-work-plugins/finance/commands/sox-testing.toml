@@ -1,3 +1,4 @@
+description = "Generate SOX sample selections, testing workpapers, and control assessments"
 prompt = """
 # SOX Compliance Testing
 

@@ -8,6 +8,7 @@ import type {
   GenerateOptions,
 } from "../types.js";
 import type { PluginIR } from "../../ir/types.js";
+import { VERSION } from "../../version.js";
 import { generateGeminiManifest } from "./generators/manifest.js";
 import { generateGeminiCommand } from "./generators/commands.js";
 import { generateGeminiSkill } from "./generators/skills.js";
@@ -64,11 +65,13 @@ export class GeminiTargetAdapter implements TargetAdapter {
     for (const skill of ir.skills) {
       const skillDir = join(outputPath, "skills", skill.name);
       await mkdir(skillDir, { recursive: true });
+      const skillResult = generateGeminiSkill(skill);
       await writeFile(
         join(skillDir, "SKILL.md"),
-        generateGeminiSkill(skill) + "\n"
+        skillResult.content + "\n"
       );
       translated.push({ type: "skill", name: skill.name });
+      warnings.push(...skillResult.warnings);
     }
 
     // Hooks
@@ -146,7 +149,12 @@ export class GeminiTargetAdapter implements TargetAdapter {
           from: "claude",
           to: "gemini",
           translatedAt: new Date().toISOString(),
-          translatorVersion: "0.1.0",
+          translatorVersion: VERSION,
+          sourcePath: options?.sourcePath,
+          environment: {
+            os: `${process.platform}-${process.arch}`,
+            nodeVersion: process.version,
+          },
         },
         null,
         2

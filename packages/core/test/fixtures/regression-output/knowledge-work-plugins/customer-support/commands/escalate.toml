@@ -1,3 +1,4 @@
+description = "Package an escalation for engineering, product, or leadership with full context"
 prompt = """
 # Escalate
 

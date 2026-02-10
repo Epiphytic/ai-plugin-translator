@@ -10,6 +10,10 @@ export interface BaseCommandOptions {
   configPath?: string;
   statePath?: string;
   execFn?: ExecFn;
+  nonInteractive?: boolean;
+  translationsDir?: string;
+  consentLevel?: "bypass" | "acknowledged";
+  onProgress?: (message: string) => void;
 }
 
 export interface TrackedPlugin {

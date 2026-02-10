@@ -1,3 +1,4 @@
+description = "Initialize the productivity system and open the dashboard"
 prompt = """
 # Start Command
 

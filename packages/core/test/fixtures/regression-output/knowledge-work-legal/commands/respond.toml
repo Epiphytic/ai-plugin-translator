@@ -1,3 +1,4 @@
+description = "Generate a response to a common legal inquiry using configured templates"
 prompt = """
 # /respond -- Generate Response from Templates
 

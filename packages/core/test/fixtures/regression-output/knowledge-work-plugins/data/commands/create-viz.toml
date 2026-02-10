@@ -1,3 +1,4 @@
+description = "Create publication-quality visualizations with Python"
 prompt = """
 # /create-viz - Create Visualizations
 

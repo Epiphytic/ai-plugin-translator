@@ -1,3 +1,4 @@
+description = "Write a feature spec or PRD from a problem statement or feature idea"
 prompt = """
 # Write Spec
 

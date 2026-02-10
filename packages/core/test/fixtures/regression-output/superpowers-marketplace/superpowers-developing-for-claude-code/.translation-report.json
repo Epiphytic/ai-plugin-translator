@@ -17,7 +17,13 @@
     }
   ],
   "skipped": [],
-  "warnings": [],
+  "warnings": [
+    "adapted skill content: replaced path variable ${CLAUDE_PLUGIN_ROOT}",
+    "adapted skill content: replaced path ~/.claude/",
+    "adapted skill content: replaced tool name reference",
+    "adapted skill content: replaced path ~/.claude/",
+    "adapted skill content: replaced tool name reference"
+  ],
   "validation": {
     "valid": true,
     "parity": {

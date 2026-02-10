@@ -1,3 +1,4 @@
+description = "Review content against your brand voice, style guide, and messaging pillars"
 prompt = """
 # Brand Review
 

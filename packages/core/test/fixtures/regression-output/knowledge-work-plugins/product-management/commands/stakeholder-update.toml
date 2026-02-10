@@ -1,3 +1,4 @@
+description = "Generate a stakeholder update tailored to audience and cadence"
 prompt = """
 # Stakeholder Update
 

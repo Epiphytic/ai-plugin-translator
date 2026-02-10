@@ -1,3 +1,4 @@
+description = "Sync tasks and refresh memory from your current activity"
 prompt = """
 # Update Command
 

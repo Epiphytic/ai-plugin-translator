@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { resolveSource, getSourceCommit } from "../../../src/pluginx/resolve-source.js";
-import { tmpdir } from "os";
+import { homedir, tmpdir } from "os";
 import { join } from "path";
 import { mkdir, rm } from "fs/promises";
 
@@ -37,6 +37,43 @@ describe("pluginx/resolve-source", () => {
       } finally {
         await rm(tmpDir, { recursive: true, force: true });
       }
+    });
+
+    it("expands ~ to home directory", async () => {
+      // ~ itself always exists as a directory
+      const result = await resolveSource("~", mockExec);
+      expect(result.sourceType).toBe("local");
+      expect(result.sourcePath).toBe(homedir());
+      expect(mockExec).not.toHaveBeenCalled();
+    });
+
+    it("throws clean error for missing local path with /", async () => {
+      await expect(
+        resolveSource("/nonexistent/path/my-plugin", mockExec)
+      ).rejects.toThrow("Local path not found: /nonexistent/path/my-plugin");
+    });
+
+    it("throws clean error for missing local path with ~/", async () => {
+      await expect(
+        resolveSource("~/nonexistent-pluginx-test-path", mockExec)
+      ).rejects.toThrow(
+        `Local path not found: ${homedir()}/nonexistent-pluginx-test-path`
+      );
+    });
+
+    it("throws clean error for missing local path with ./", async () => {
+      await expect(
+        resolveSource("./nonexistent-pluginx-test-path", mockExec)
+      ).rejects.toThrow("Local path not found: ./nonexistent-pluginx-test-path");
+    });
+
+    it("throws clean error when git repo not found", async () => {
+      mockExec.mockRejectedValue({
+        stderr: "fatal: repository 'https://github.com/user/nope.git' does not exist\n",
+      });
+      await expect(
+        resolveSource("user/nope", mockExec)
+      ).rejects.toThrow("Repository not found: user/nope");
     });
 
     it("derives name from git URL", async () => {

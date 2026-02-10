@@ -3,29 +3,34 @@ import { writeFile, mkdir, rm, readFile } from "fs/promises";
 import { join } from "path";
 import { tmpdir } from "os";
 
-vi.mock("@inquirer/select", () => ({
-  default: vi.fn(),
+vi.mock("@clack/prompts", () => ({
+  select: vi.fn(),
+  intro: vi.fn(),
+  outro: vi.fn(),
+  note: vi.fn(),
+  isCancel: vi.fn(),
+  cancel: vi.fn(),
 }));
 
-import select from "@inquirer/select";
-import { runConsentPrompt, ensureConsent } from "../../../src/pluginx/consent.js";
-import { PassThrough } from "stream";
+import { select, isCancel } from "@clack/prompts";
+import {
+  runConsentPrompt,
+  ensureConsent,
+} from "../../../src/pluginx/consent.js";
 
 const mockedSelect = vi.mocked(select);
+const mockedIsCancel = vi.mocked(isCancel);
 
 describe("pluginx/consent", () => {
   let tmpDir: string;
   let configPath: string;
-  let mockInput: PassThrough;
-  let mockOutput: PassThrough;
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    mockedIsCancel.mockReturnValue(false);
     tmpDir = join(tmpdir(), `pluginx-consent-test-${Date.now()}`);
     await mkdir(tmpDir, { recursive: true });
     configPath = join(tmpDir, "config.json");
-    mockInput = new PassThrough();
-    mockOutput = new PassThrough();
   });
 
   afterEach(async () => {
@@ -36,11 +41,7 @@ describe("pluginx/consent", () => {
     it("returns 'acknowledged' and writes config", async () => {
       mockedSelect.mockResolvedValue("acknowledged");
 
-      const result = await runConsentPrompt({
-        configPath,
-        input: mockInput,
-        output: mockOutput,
-      });
+      const result = await runConsentPrompt({ configPath });
 
       expect(result).toBe("acknowledged");
       const saved = JSON.parse(await readFile(configPath, "utf-8"));
@@ -50,46 +51,44 @@ describe("pluginx/consent", () => {
     it("returns 'bypass' and writes config", async () => {
       mockedSelect.mockResolvedValue("bypass");
 
-      const result = await runConsentPrompt({
-        configPath,
-        input: mockInput,
-        output: mockOutput,
-      });
+      const result = await runConsentPrompt({ configPath });
 
       expect(result).toBe("bypass");
       const saved = JSON.parse(await readFile(configPath, "utf-8"));
       expect(saved.consentLevel).toBe("bypass");
     });
 
-    it("returns 'declined' and writes config", async () => {
+    it("returns 'declined' when user selects decline", async () => {
       mockedSelect.mockResolvedValue("declined");
 
-      const result = await runConsentPrompt({
-        configPath,
-        input: mockInput,
-        output: mockOutput,
-      });
+      const result = await runConsentPrompt({ configPath });
 
       expect(result).toBe("declined");
       const saved = JSON.parse(await readFile(configPath, "utf-8"));
       expect(saved.consentLevel).toBe("declined");
     });
 
-    it("writes security banner to output", async () => {
-      mockedSelect.mockResolvedValue("acknowledged");
-      let outputData = "";
-      mockOutput.on("data", (chunk) => {
-        outputData += chunk.toString();
-      });
+    it("returns 'declined' when user cancels (Ctrl+C)", async () => {
+      mockedSelect.mockResolvedValue(Symbol("cancel"));
+      mockedIsCancel.mockReturnValue(true);
 
-      await runConsentPrompt({
+      const result = await runConsentPrompt({ configPath });
+
+      expect(result).toBe("declined");
+      const saved = JSON.parse(await readFile(configPath, "utf-8"));
+      expect(saved.consentLevel).toBe("declined");
+    });
+
+    it("auto-acknowledges in non-interactive mode without prompting", async () => {
+      const result = await runConsentPrompt({
         configPath,
-        input: mockInput,
-        output: mockOutput,
+        nonInteractive: true,
       });
 
-      expect(outputData).toContain("PLUGINX SECURITY NOTICE");
-      expect(outputData).toContain("EXPERIMENTAL");
+      expect(result).toBe("acknowledged");
+      expect(mockedSelect).not.toHaveBeenCalled();
+      const saved = JSON.parse(await readFile(configPath, "utf-8"));
+      expect(saved.consentLevel).toBe("acknowledged");
     });
   });
 
@@ -97,11 +96,7 @@ describe("pluginx/consent", () => {
     it("returns existing 'bypass' consent without prompting", async () => {
       await writeFile(configPath, JSON.stringify({ consentLevel: "bypass" }));
 
-      const result = await ensureConsent({
-        configPath,
-        input: mockInput,
-        output: mockOutput,
-      });
+      const result = await ensureConsent({ configPath });
 
       expect(result).toBe("bypass");
       expect(mockedSelect).not.toHaveBeenCalled();
@@ -113,11 +108,7 @@ describe("pluginx/consent", () => {
         JSON.stringify({ consentLevel: "acknowledged" })
       );
 
-      const result = await ensureConsent({
-        configPath,
-        input: mockInput,
-        output: mockOutput,
-      });
+      const result = await ensureConsent({ configPath });
 
       expect(result).toBe("acknowledged");
       expect(mockedSelect).not.toHaveBeenCalled();
@@ -126,14 +117,20 @@ describe("pluginx/consent", () => {
     it("prompts when consent is required", async () => {
       mockedSelect.mockResolvedValue("acknowledged");
 
-      const result = await ensureConsent({
-        configPath,
-        input: mockInput,
-        output: mockOutput,
-      });
+      const result = await ensureConsent({ configPath });
 
       expect(result).toBe("acknowledged");
       expect(mockedSelect).toHaveBeenCalledOnce();
+    });
+
+    it("auto-acknowledges in non-interactive mode when consent required", async () => {
+      const result = await ensureConsent({
+        configPath,
+        nonInteractive: true,
+      });
+
+      expect(result).toBe("acknowledged");
+      expect(mockedSelect).not.toHaveBeenCalled();
     });
 
     it("exits process when user declines", async () => {
@@ -142,11 +139,7 @@ describe("pluginx/consent", () => {
         .spyOn(process, "exit")
         .mockImplementation(() => undefined as never);
 
-      await ensureConsent({
-        configPath,
-        input: mockInput,
-        output: mockOutput,
-      });
+      await ensureConsent({ configPath });
 
       expect(mockExit).toHaveBeenCalledWith(0);
       mockExit.mockRestore();

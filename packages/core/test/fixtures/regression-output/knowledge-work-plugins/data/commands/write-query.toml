@@ -1,3 +1,4 @@
+description = "Write optimized SQL for your dialect with best practices"
 prompt = """
 # /write-query - Write Optimized SQL
 

@@ -1,3 +1,4 @@
+description = "Rapidly triage an incoming NDA — classify as standard approval, counsel review, or full legal review"
 prompt = """
 # /triage-nda -- NDA Pre-Screening
 

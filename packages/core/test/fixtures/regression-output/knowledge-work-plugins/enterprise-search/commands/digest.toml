@@ -1,3 +1,4 @@
+description = "Generate a daily or weekly digest of activity across all connected sources"
 prompt = """
 # Digest Command
 

@@ -1,3 +1,4 @@
+description = "Review and analyze product metrics with trend analysis and actionable insights"
 prompt = """
 # Metrics Review
 

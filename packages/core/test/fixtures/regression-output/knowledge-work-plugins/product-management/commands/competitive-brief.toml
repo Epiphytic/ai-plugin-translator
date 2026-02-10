@@ -1,3 +1,4 @@
+description = "Create a competitive analysis brief for one or more competitors or a feature area"
 prompt = """
 # Competitive Brief
 

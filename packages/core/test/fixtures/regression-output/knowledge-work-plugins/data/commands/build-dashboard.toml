@@ -1,3 +1,4 @@
+description = "Build an interactive HTML dashboard with charts, filters, and tables"
 prompt = """
 # /build-dashboard - Build Interactive Dashboards
 

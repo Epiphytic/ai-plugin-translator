@@ -1,5 +1,2 @@
-prompt = """You are the pluginx extension manager. Run:
-!{npx -y -p @epiphytic/ai-plugin-translator pluginx list}
-
-Display the output to the user.
-"""
+prompt = """Use the pluginx_list tool to list all tracked plugins.
+Display the results to the user in a readable format."""

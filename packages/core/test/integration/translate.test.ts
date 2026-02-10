@@ -70,6 +70,10 @@ describe("end-to-end: Claude -> Gemini", () => {
     );
     expect(meta.from).toBe("claude");
     expect(meta.to).toBe("gemini");
+    expect(meta.translatorVersion).toBeDefined();
+    expect(meta.translatedAt).toBeDefined();
+    expect(meta.environment.os).toBeDefined();
+    expect(meta.environment.nodeVersion).toBeDefined();
 
     // Report
     expect(report.pluginName).toBe("full-plugin");

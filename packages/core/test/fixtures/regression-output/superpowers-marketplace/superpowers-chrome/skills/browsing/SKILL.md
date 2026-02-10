@@ -366,7 +366,7 @@ Best for: Multi-step test suites, standalone automation scripts
 
 ## Advanced Usage
 
-For command-line usage outside Claude Code, see [COMMANDLINE-USAGE.md](COMMANDLINE-USAGE.md).
+For command-line usage outside Gemini CLI, see [COMMANDLINE-USAGE.md](COMMANDLINE-USAGE.md).
 
 For detailed examples, see [EXAMPLES.md](EXAMPLES.md).
 

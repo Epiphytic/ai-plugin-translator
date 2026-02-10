@@ -1,3 +1,4 @@
+description = "QA an analysis before sharing -- methodology, accuracy, and bias checks"
 prompt = """
 # /validate - Validate Analysis Before Sharing
 

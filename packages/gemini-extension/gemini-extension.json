@@ -1,0 +1,14 @@
+{
+  "name": "pluginx",
+  "version": "1.0.0",
+  "description": "Translate and manage Claude Code plugins as Gemini CLI extensions",
+  "mcpServers": {
+    "pluginx": {
+      "command": "node",
+      "args": [
+        "${extensionPath}/dist/server.js"
+      ]
+    }
+  },
+  "contextFileName": "GEMINI.md"
+}

@@ -1,3 +1,4 @@
+description = "Review a contract against your organization's negotiation playbook — flag deviations, generate redlines, provide business impact analysis"
 prompt = """
 # /review-contract -- Contract Review Against Playbook
 
